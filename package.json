@@ -1,0 +1,7 @@
+{
+  "name": "mowa-sandcastle",
+  "private": true,
+  "type": "module",
+  "scripts": { "sandcastle": "npx tsx .sandcastle/main.mts" },
+  "devDependencies": { "@ai-hero/sandcastle": "0.12.0", "tsx": "^4.19.0" }
+}
