@@ -57,7 +57,7 @@ mowa is an open-source iPhone app for voice dictation in Polish and English. It 
 - NFR4 Privacy: no network calls except model downloads (Hugging Face) and opt-in crash logs (none in v1). The keyboard asks for Full Access only for the App Group/IPC. We must document the reason in the app. Excluded from history: secure text fields.
 - NFR5 Accuracy (TARGET): Polish WER equal to or less than 9% on our test set. Reference: Parakeet v3 FLEURS-pl 7.31% (https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3), 8.21% (https://yapapp.cc/data/on-device-asr-benchmark/csv). Names from the word list: TARGET 90% or more correct.
 - NFR6 Licenses: show the CC-BY-4.0 attribution for Parakeet v3 in the app and in the README (https://memoe.app/licenses). mowa code: MIT (proposed).
-- NFR7 Platform: Swift, SwiftUI, minimum iOS 26. Xcode 27.1 (27A9275), iOS 27.1 SDK, Swift 6.4, the newest stable at 2026-10-20 (https://developer.apple.com/documentation/xcode-release-notes/xcode-27_1-release-notes.md).
+- NFR7 Platform: Swift, SwiftUI, minimum iOS 26. Xcode 26.6 (17F113), iOS 26.5 SDK: the default Xcode on the GitHub `macos-26` runner image (actions/runner-images macos-26-arm64 README, checked 2026-10-20). Use the newest Xcode that the runner image has.
 - NFR8 Battery: do not record when no session is active. The session ends after the idle timeout.
 
 ## 8. Architecture
@@ -78,7 +78,7 @@ VAD/endpointing: FluidAudio VAD or Parakeet Realtime EOU 120M (NVIDIA Open Model
 
 ## 9. Repository, CI and delivery
 - Public repo: `github.com/tomiwu/mowa`. Issues have the labels `P0`, `P1`, `P2`, and `blocked`.
-- GitHub Actions on macOS runners. They are free for public repos (https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job). Xcode 27.1 on the runner images is UNVERIFIED (Q1).
+- GitHub Actions on macOS runners. They are free for public repos (https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job). The `macos-26` image has Xcode 26.0.1 to 26.6; 26.6 is the default (checked 2026-10-20).
 - Required checks on PRs: `build` (xcodebuild app + keyboard), `test` (unit tests, simulator), `lint` (SwiftLint + swift-format lint).
 - On push to main: fastlane `upload_to_testflight` with an App Store Connect API key (.p8 key in repo secrets), with code signing through fastlane match or manual certificates. Fastlane docs are UNVERIFIED in this research (https://docs.fastlane.tools/actions/upload_to_testflight/).
 - Apple Developer Program: paid account (99 USD/year, UNVERIFIED in this research, https://developer.apple.com/programs/).
@@ -120,10 +120,10 @@ VAD/endpointing: FluidAudio VAD or Parakeet Realtime EOU 120M (NVIDIA Open Model
 | Mixed Polish/English accuracy is not known | G1 fails | Test set T1.8. Whisper fallback |
 | No good biasing method for names | G2 fails | Use fuzzy correction after the transcription as the minimum |
 | App Review rejects Full Access/background audio | App Store delay | TestFlight first. Clear review notes |
-| Xcode 27.1 is not on the runners | CI fails | Select the Xcode with `setup-xcode`, or pin the runner image |
+| A new Xcode is not yet on the runner | CI cannot use it | Pin Xcode 26.6 with `xcode-select`; update when the image adds a newer one |
 
 ## 12. Open questions
-- Q1: Is Xcode 27.1 on the GitHub `macos-26` runner image? Make a check before T0.3.
+- Q1: CLOSED. Xcode 26.6 is the default on `macos-26`. See docs/CI_PLAN.md.
 - Q2: What is the WER of Parakeet v3 on mixed Polish/English sentences? Does it change the language in the middle of a sentence?
 - Q3: Does FluidAudio have custom vocabulary/context biasing for Parakeet? UNVERIFIED.
 - Q4: Does Apple Foundation Models support Polish? UNVERIFIED.
