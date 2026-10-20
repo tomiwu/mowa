@@ -28,7 +28,7 @@ Review the code changes on branch `{{BRANCH}}` and improve code clarity, consist
 3. **Check correctness**:
    - Does the implementation match the intent? Are edge cases handled?
    - Are new/changed behaviours covered by tests?
-   - Are there unsafe casts, force unwraps, `try!`, `as!`, singletons, `@unchecked Sendable`, or unchecked assumptions?
+   - Are there unsafe casts, force unwraps, try! and as! casts, singletons, `@unchecked Sendable`, or unchecked assumptions?
    - Does the change introduce injection vulnerabilities, credential leaks, or other security issues?
 
 4. **Maintain balance**: Avoid over-simplification that could:
