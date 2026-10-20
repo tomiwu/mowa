@@ -14,7 +14,8 @@ let package = Package(
                 .enableUpcomingFeature("MemberImportVisibility"),
                 .treatAllWarnings(as: .error),
             ]
-        )
+        ),
+        .testTarget(name: "MowaCoreTests", dependencies: ["MowaCore"]),
     ],
     swiftLanguageModes: [.v6]
 )
