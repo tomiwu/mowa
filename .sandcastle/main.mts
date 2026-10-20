@@ -5,7 +5,7 @@
 //      "Blocked by #N" issue. Take the highest priority label, then the lowest number.
 //   2. Create a sandbox on the branch "sandcastle/issue-<N>".
 //   3. Run the implementer agent, then the reviewer agent.
-//   4. Run the Linux checks in the sandbox: swift-format lint, SwiftLint, and
+//   4. Run the Linux checks in the sandbox: swift-format lint and
 //      `swift test` for logic packages. The container cannot build iOS. The PR CI on
 //      macOS (format, lint, build, test, crap) is the real gate.
 //   5. If a check fails, run the fixer agent. Retry up to MAX_FIX_ATTEMPTS.
@@ -70,7 +70,7 @@ const SKIP = new Set((process.env.SKIP_ISSUES ?? "").split(",").filter(Boolean).
 const hooks = {
   sandbox: {
     onSandboxReady: [
-      { command: "swift --version && swiftlint version || true" },
+      { command: "swift --version || true" },
     ],
   },
 };
@@ -121,7 +121,7 @@ function failedCiLog(url: string): string {
   }).join("\n");
 }
 
-// Linux checks only. Each check runs only when its tool and config exist. CI on macOS is the gate.
+// Linux checks only. SwiftLint runs only in the macOS CI (the Linux binary needs GLIBC 2.38; the image has 2.36). Each check runs only when its tool and config exist. CI on macOS is the gate.
 async function check(sandbox: sandcastle.Sandbox, title: string, cmd: string): Promise<{ ok: boolean; log: string }> {
   const r = await sandbox.exec(`${cmd} > /tmp/check.log 2>&1; rc=$?; tail -n 150 /tmp/check.log; exit $rc`);
   return { ok: r.exitCode === 0, log: `## ${title}\n${r.stdout}\n` };
@@ -131,8 +131,6 @@ async function runChecks(sandbox: sandcastle.Sandbox): Promise<{ ok: boolean; lo
   const results = [
     await check(sandbox, "swift format lint (run `swift format format --in-place --recursive .` to fix)",
       "if [ -f .swift-format ]; then swift format lint --strict --recursive --parallel . ; fi"),
-    await check(sandbox, "swiftlint lint --strict",
-      "if [ -f .swiftlint.yml ]; then swiftlint lint --strict --quiet; fi"),
     await check(sandbox, "swift test (logic packages that build on Linux)",
       "for p in $(find Packages -maxdepth 2 -name Package.swift 2>/dev/null); do (cd $(dirname $p) && swift test) || exit 1; done"),
   ];
@@ -207,7 +205,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
   if (!existing) sh("git", ["push", "-f", "origin", branch]);
   const url: string = existing ? existing.url : sh("gh", ["pr", "create", "--base", "main", "--head", branch,
     "--title", issue.title,
-    "--body", `This PR implements #${issue.number}.\n\n${sh("git", ["log", "--reverse", "--format=%B", `main..${branch}`])}\n\nThe Linux checks pass (swift-format, SwiftLint, swift test for logic packages). The macOS CI is the gate.\n\nCloses #${issue.number}`]);
+    "--body", `This PR implements #${issue.number}.\n\n${sh("git", ["log", "--reverse", "--format=%B", `main..${branch}`])}\n\nThe Linux checks pass (swift-format, swift test for logic packages). The macOS CI is the gate.\n\nCloses #${issue.number}`]);
   console.log(`PR: ${url}`);
   // Merge only when all GitHub Actions checks on the PR pass.
   let hasChecks = false;

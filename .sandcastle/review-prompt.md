@@ -57,7 +57,7 @@ Review the code changes on branch `{{BRANCH}}` and improve code clarity, consist
 If you find improvements to make:
 
 1. Make the changes directly on this branch
-2. Run `swift format lint --strict --recursive .`, `swiftlint lint --strict` and `swift test` for Linux packages to ensure nothing is broken
+2. Run `swift format lint --strict --recursive .`, `swift test` for Linux packages to ensure nothing is broken
 3. Commit describing the refinements. Write the commit message in English, in ASD-STE100 Simplified Technical English.
 
 If the code is already clean and well-structured, do nothing.

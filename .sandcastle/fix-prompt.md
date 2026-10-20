@@ -14,7 +14,7 @@ You work on mowa, issue #{{ISSUE}}, branch `{{BRANCH}}`. The checks failed: the 
 - If a function has CRAP 4 or more, make it smaller or add tests.
 - Follow `docs/PRD.md`, `docs/CODING_STANDARDS.md` and `docs/CI_PLAN.md`.
 - If the format check fails, run `swift format format --in-place --recursive .`. Do not format by hand.
-- Run `swiftlint lint --strict` and `swift test` for the packages that build on Linux.
+- Run `swift test` for the packages that build on Linux.
 - Keep the CI job ids `format`, `lint`, `build`, `test` and `crap`.
 - Make one commit. Start the message with `RALPH: #{{ISSUE}} fix`. Use ASD-STE100 Simplified Technical English.
 - Do not push. Do not open a PR. Do not close the issue.
