@@ -1,0 +1,413 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		000000000000000000A00001 = {isa = PBXBuildFile; fileRef = 000000000000000000A00002; };
+		000000000000000000A00003 = {isa = PBXBuildFile; fileRef = 000000000000000000A00004; };
+		000000000000000000A00005 = {isa = PBXBuildFile; fileRef = 000000000000000000A00006; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		000000000000000000A00007 = {isa = PBXBuildFile; productRef = 000000000000000000A00008; };
+		000000000000000000A00009 = {isa = PBXBuildFile; productRef = 000000000000000000A0000A; };
+		000000000000000000A0000B = {isa = PBXBuildFile; productRef = 000000000000000000A0000C; };
+		000000000000000000A0000D = {isa = PBXBuildFile; productRef = 000000000000000000A0000E; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		000000000000000000A0000F = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000A00010;
+			proxyType = 1;
+			remoteGlobalIDString = 000000000000000000A00011;
+			remoteInfo = MowaKeyboard;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		000000000000000000A00012 = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				000000000000000000A00005,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		000000000000000000A00002 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MowaApp.swift; sourceTree = "<group>"; };
+		000000000000000000A00013 = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		000000000000000000A00014 = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = mowa.entitlements; sourceTree = "<group>"; };
+		000000000000000000A00004 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
+		000000000000000000A00015 = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		000000000000000000A00016 = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MowaKeyboard.entitlements; sourceTree = "<group>"; };
+		000000000000000000A00017 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mowa.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		000000000000000000A00006 = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MowaKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		000000000000000000A00018 = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000A00007,
+				000000000000000000A00009,
+				000000000000000000A0000B,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000A00019 = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000A0000D,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		000000000000000000A0001A = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000A0001B,
+				000000000000000000A0001C,
+				000000000000000000A0001D,
+			);
+			sourceTree = "<group>";
+		};
+		000000000000000000A0001B = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000A00002,
+				000000000000000000A00013,
+				000000000000000000A00014,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		000000000000000000A0001C = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000A00004,
+				000000000000000000A00015,
+				000000000000000000A00016,
+			);
+			path = Keyboard;
+			sourceTree = "<group>";
+		};
+		000000000000000000A0001D = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000A00017,
+				000000000000000000A00006,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		000000000000000000A00011 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000A0001E;
+			buildPhases = (
+				000000000000000000A0001F,
+				000000000000000000A00019,
+				000000000000000000A00020,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MowaKeyboard;
+			packageProductDependencies = (
+				000000000000000000A0000E,
+			);
+			productName = MowaKeyboard;
+			productReference = 000000000000000000A00006;
+			productType = "com.apple.product-type.app-extension";
+		};
+		000000000000000000A00021 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000A00022;
+			buildPhases = (
+				000000000000000000A00023,
+				000000000000000000A00018,
+				000000000000000000A00024,
+				000000000000000000A00012,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				000000000000000000A00025,
+			);
+			name = mowa;
+			packageProductDependencies = (
+				000000000000000000A00008,
+				000000000000000000A0000A,
+				000000000000000000A0000C,
+			);
+			productName = mowa;
+			productReference = 000000000000000000A00017;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		000000000000000000A00010 = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
+			};
+			buildConfigurationList = 000000000000000000A00026;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 000000000000000000A0001A;
+			packageReferences = (
+				000000000000000000A00027,
+				000000000000000000A00028,
+				000000000000000000A00029,
+			);
+			productRefGroup = 000000000000000000A0001D;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				000000000000000000A00021,
+				000000000000000000A00011,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		000000000000000000A00024 = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000A00020 = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		000000000000000000A00023 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000A00001,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000A0001F = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				000000000000000000A00003,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		000000000000000000A00025 = {
+			isa = PBXTargetDependency;
+			target = 000000000000000000A00011;
+			targetProxy = 000000000000000000A0000F;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		000000000000000000A0002A = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_UPCOMING_FEATURE_INTERNAL_IMPORTS_BY_DEFAULT = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		000000000000000000A0002B = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_TREAT_WARNINGS_AS_ERRORS = YES;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_UPCOMING_FEATURE_INTERNAL_IMPORTS_BY_DEFAULT = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		000000000000000000A0002C = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "App/mowa.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "App/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomiwu.mowa;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+			};
+			name = Debug;
+		};
+		000000000000000000A0002D = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "App/mowa.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "App/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomiwu.mowa;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+			};
+			name = Release;
+		};
+		000000000000000000A0002E = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Keyboard/MowaKeyboard.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Keyboard/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomiwu.mowa.keyboard;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+			};
+			name = Debug;
+		};
+		000000000000000000A0002F = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = "Keyboard/MowaKeyboard.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "Keyboard/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomiwu.mowa.keyboard;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		000000000000000000A00026 /* Build configuration list for PBXProject "mowa" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000A0002A,
+				000000000000000000A0002B,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000A00022 /* Build configuration list for PBXNativeTarget "mowa" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000A0002C,
+				000000000000000000A0002D,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000A0001E /* Build configuration list for PBXNativeTarget "MowaKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000A0002E,
+				000000000000000000A0002F,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		000000000000000000A00027 = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/MowaCore;
+		};
+		000000000000000000A00028 = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/MowaASR;
+		};
+		000000000000000000A00029 = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/MowaShared;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		000000000000000000A00008 = {
+			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000A00027;
+			productName = MowaCore;
+		};
+		000000000000000000A0000A = {
+			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000A00028;
+			productName = MowaASR;
+		};
+		000000000000000000A0000C = {
+			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000A00029;
+			productName = MowaShared;
+		};
+		000000000000000000A0000E = {
+			isa = XCSwiftPackageProductDependency;
+			package = 000000000000000000A00029;
+			productName = MowaShared;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 000000000000000000A00010;
+}
