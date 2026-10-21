@@ -27,8 +27,8 @@ Implement issue #{{ISSUE}} on branch `{{BRANCH}}`. Do only this issue.
 - Write all code, comments and commit messages in English. Use ASD-STE100 Simplified Technical English.
 - Use Swift 6 language mode, strict concurrency `complete`, warnings as errors, Xcode 26.6. If you add a package, use its latest stable version with Swift Package Manager. Do not use CocoaPods or Carthage.
 - Obey the do-not-use list in `docs/CI_PLAN.md`.
-- Every function must have a CRAP score less than 4. Keep functions small and tested.
-- Run `scripts/crap-local.sh` before you finish. It runs the tests with coverage for each package under `Packages/` and `Tools/` and fails if a function has CRAP 4 or more. Fix each function that it lists: add tests, or split the function.
+- Every function must have a CRAP score less than 6. Keep functions small and tested.
+- Run `scripts/crap-local.sh` before you finish. It runs the tests with coverage for each package under `Packages/` and `Tools/` and fails if a function has CRAP 6 or more. Fix each function that it lists: add tests, or split the function.
 - Put platform-free logic (sample conversion, buffer math, voice activity probability, pipeline state, text rules) in a package under `Packages/` so that the local gate measures it. Code in `App/` and `Keyboard/` that uses AVFoundation, UIKit, SwiftUI or Core ML is measured only in the macOS CI: keep each such function very small (complexity 1 or 2, no loops, no `if`, no `switch`) and call into a package for the logic.
 - lizard counts `if`, `guard`, `for`, `while`, `case`, `&&`, `||`, `??`, `?:`, and also `?` in optional types. Keep these out of large functions.
 - Do not push. Do not open a PR. Do not close the issue. The host does these steps.

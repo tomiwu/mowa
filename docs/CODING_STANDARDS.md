@@ -24,7 +24,7 @@ Versions were checked on 2026-10-20 (GitHub releases and the `actions/runner-ima
 13. **Prefer `let`, value types, and immutable collections.** Use `var` only inside a function scope or an actor. Reason: no shared mutable state.
 14. **Use `private` or `fileprivate` by default; make API `public` only in package targets that export it.** Reason: small surfaces.
 15. **Use SwiftUI and the Observation framework (`@Observable`)**, not `ObservableObject`/`@Published`. Reason: less boilerplate, no Combine.
-16. **Keep the CRAP score of every function below 4**: small functions, few branches, high coverage. Reason: same project rule as crap4s.
+16. **Keep the CRAP score of every function below 6** (Tomasz changed the limit from 4 to 6 on 2026-10-21): small functions, few branches, high coverage. Reason: same project rule as crap4s.
     Run `scripts/crap-local.sh` before each push (Linux or macOS). It measures `Packages/` and `Tools/` with `swift test --enable-code-coverage`. Put platform-free logic in `Packages/`. Keep functions in `App/` and `Keyboard/` that use AVFoundation, UIKit or SwiftUI at complexity 1 or 2, because only the macOS CI measures them. Note: lizard also counts `?` in optional types and `??`.
 
 ## 3. Formatting
@@ -117,4 +117,4 @@ Disabled rules that swift-format owns avoid conflicts between the two tools.
 
 ## 5. CI gate
 
-On each pull request, GitHub Actions runs: format, lint, build with warnings as errors, unit tests on the iOS simulator, and the CRAP gate (CRAP < 4 for every function). See `docs/CI_PLAN.md`. The Sandcastle loop merges a PR only when all required checks pass.
+On each pull request, GitHub Actions runs: format, lint, build with warnings as errors, unit tests on the iOS simulator, and the CRAP gate (CRAP < 6 for every function). See `docs/CI_PLAN.md`. The Sandcastle loop merges a PR only when all required checks pass.
