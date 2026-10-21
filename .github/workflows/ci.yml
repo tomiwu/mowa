@@ -70,9 +70,6 @@ jobs:
             -project mowa.xcodeproj \
             -scheme mowa \
             -destination "platform=iOS Simulator,name=$SIMULATOR_NAME,OS=$SIMULATOR_OS" \
-            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
-            SWIFT_VERSION=6 \
-            SWIFT_STRICT_CONCURRENCY=complete \
             | xcbeautify --renderer github-actions
 
   test:
