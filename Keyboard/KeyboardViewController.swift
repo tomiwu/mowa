@@ -6,6 +6,7 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
     private let notifier = DarwinNotifier(transport: SystemNotificationTransport())
     private var model = KeyboardModel(readStatus: { .noSession })
     private var observation: Task<Void, Never>?
+    private var resultObservation: Task<Void, Never>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,11 +19,19 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
         observation = Task { [model, notifier] in
             await model.observe(changes: notifier.sessionChanged())
         }
+        resultObservation = Task { [notifier, weak self] in
+            guard let self else { return }
+            await ResultReceiver(store: makeStore()).observe(
+                changes: notifier.resultReady(),
+                host: self
+            )
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         observation?.cancel()
+        resultObservation?.cancel()
     }
 
     func insertText(_ text: String) {
@@ -47,8 +56,12 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
     }
 
     private func readStatus() -> @MainActor () -> SessionStatus {
-        let store = try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
+        let store = makeStore()
         return { (try? store?.readSessionStatus()) ?? .noSession }
+    }
+
+    private func makeStore() -> SharedStore? {
+        try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
     }
 
     private func embed(_ content: KeyboardView) {
