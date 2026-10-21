@@ -72,6 +72,21 @@ public enum CrapScore {
         }
     }
 
+    /// Keeps only functions with a coverage entry between the start line and the end line.
+    /// A function without an entry was not compiled on this platform (for example `#if os(iOS)`).
+    /// Only the local Linux gate uses this. The macOS CI gate counts such a function as 0%.
+    public static func compiled(
+        complexities: [FunctionComplexity],
+        coverage: [FunctionKey: Double]
+    ) -> [FunctionComplexity] {
+        let files = Dictionary(grouping: coverage.keys, by: \.file)
+        return complexities.filter { function in
+            files[function.key.file, default: []].contains {
+                (function.key.line...function.endLine).contains($0.line)
+            }
+        }
+    }
+
     public static func failures(rows: [CrapRow], threshold: Double) -> [CrapRow] {
         rows.filter { $0.crap >= threshold }
     }

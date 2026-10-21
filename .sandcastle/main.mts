@@ -5,8 +5,8 @@
 //      "Blocked by #N" issue. Take the highest priority label, then the lowest number.
 //   2. Create a sandbox on the branch "sandcastle/issue-<N>".
 //   3. Run the implementer agent, then the reviewer agent.
-//   4. Run the Linux checks in the sandbox: swift-format lint and
-//      `swift test` for logic packages. The container cannot build iOS. The PR CI on
+//   4. Run the Linux checks in the sandbox: swift-format lint, `swift test` for logic
+//      packages, and the local CRAP gate `scripts/crap-local.sh` (Packages/ and Tools/). The container cannot build iOS. The PR CI on
 //      macOS (format, lint, build, test, crap) is the real gate.
 //   5. If a check fails, run the fixer agent. Retry up to MAX_FIX_ATTEMPTS.
 //   6. Push the branch, open a PR, wait for CI, squash-merge, close the issue.
@@ -134,6 +134,8 @@ async function runChecks(sandbox: sandcastle.Sandbox): Promise<{ ok: boolean; lo
       "if [ -f .swift-format ]; then swift format lint --strict --recursive --parallel . ; fi"),
     await check(sandbox, "swift test (logic packages that build on Linux)",
       "for p in $(find Packages -maxdepth 2 -name Package.swift 2>/dev/null); do (cd $(dirname $p) && swift test) || exit 1; done"),
+    await check(sandbox, "local CRAP gate (scripts/crap-local.sh: every function in Packages/ and Tools/ must have CRAP < 4)",
+      "if [ -x scripts/crap-local.sh ]; then scripts/crap-local.sh; fi"),
   ];
   return { ok: results.every((r) => r.ok), log: results.map((r) => r.log).join("") };
 }
@@ -206,7 +208,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
   if (!existing) sh("git", ["push", "-f", "origin", branch]);
   const url: string = existing ? existing.url : sh("gh", ["pr", "create", "--base", "main", "--head", branch,
     "--title", issue.title,
-    "--body", `This PR implements #${issue.number}.\n\n${sh("git", ["log", "--reverse", "--format=%B", `main..${branch}`])}\n\nThe Linux checks pass (swift-format, swift test for logic packages). The macOS CI is the gate.\n\nCloses #${issue.number}`]);
+    "--body", `This PR implements #${issue.number}.\n\n${sh("git", ["log", "--reverse", "--format=%B", `main..${branch}`])}\n\nThe Linux checks pass (swift-format, swift test for logic packages, local CRAP gate). The macOS CI is the gate.\n\nCloses #${issue.number}`]);
   console.log(`PR: ${url}`);
   // Merge only when all GitHub Actions checks on the PR pass.
   let hasChecks = false;

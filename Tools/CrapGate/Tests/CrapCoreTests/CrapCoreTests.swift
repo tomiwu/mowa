@@ -214,3 +214,80 @@ struct CrapMainTests {
         #expect(!err.isEmpty)
     }
 }
+
+private func llvmCov(file: String, regions: String) -> String {
+    """
+    {"type":"llvm.coverage.json.export","version":"2.0.1","data":[{"functions":[
+    {"name":"f","count":1,"filenames":["\(file)"],"regions":[\(regions)]}]}]}
+    """
+}
+
+struct LlvmCovParserTests {
+    @Test func detectsExportType() {
+        #expect(LlvmCovParser.isExport(llvmCov(file: "/r/A.swift", regions: "")))
+        #expect(!LlvmCovParser.isExport(xccov(file: "/r/A.swift", line: 1, coverage: 1)))
+        #expect(!LlvmCovParser.isExport("not json"))
+    }
+
+    @Test func coverageIsPartOfCodeRegionsThatRan() throws {
+        let json = llvmCov(
+            file: "/r/A.swift",
+            regions: "[5,1,8,2,3,0,0,0],[6,1,6,9,0,0,0,0],[7,1,7,9,0,1,0,0],[7,1,7,9,0,0,0,2]"
+        )
+        let map = try LlvmCovParser.parse(json, root: "/r")
+        #expect(map == [FunctionKey(file: "A.swift", line: 5): 0.5])
+    }
+
+    @Test func functionWithoutCodeRegionIsSkipped() throws {
+        let map = try LlvmCovParser.parse(llvmCov(file: "/r/A.swift", regions: "[1,1]"), root: "/r")
+        #expect(map.isEmpty)
+    }
+
+    @Test func badJSONThrows() {
+        #expect(throws: CrapError.self) { try LlvmCovParser.parse("{}", root: "/r") }
+    }
+
+    @Test func mainAcceptsLlvmCovFile() {
+        let files = [
+            "l.csv": lizardCSV,
+            "a.json": llvmCov(file: "/r/App/A.swift", regions: "[5,1,8,2,1,0,0,0]"),
+            "b.json": llvmCov(file: "/r/App/B.swift", regions: "[10,1,18,2,1,0,0,0]"),
+        ]
+        var out = ""
+        let code = CrapMain.run(
+            arguments: ["/r", "4", "l.csv", "a.json", "b.json"],
+            read: { path in files[path] ?? "" },
+            write: { out += $0 },
+            writeError: { _ in }
+        )
+        #expect(code == 0)
+        #expect(out.contains("App/A.swift,5,\"a\",1,1.00,1.00"))
+    }
+
+    @Test func onlyCompiledSkipsFunctionsWithoutCoverage() {
+        let files = [
+            "l.csv": lizardCSV,
+            "b.json": llvmCov(file: "/r/App/B.swift", regions: "[11,1,18,2,1,0,0,0]"),
+        ]
+        var out = ""
+        let code = CrapMain.run(
+            arguments: ["--only-compiled", "/r", "4", "l.csv", "b.json"],
+            read: { path in files[path] ?? "" },
+            write: { out += $0 },
+            writeError: { _ in }
+        )
+        #expect(code == 0)
+        #expect(!out.contains("App/A.swift"))
+        #expect(out.contains("App/B.swift,10,\"b\",3,1.00,3.00"))
+    }
+
+    @Test func onlyCompiledNeedsOtherArguments() {
+        let code = CrapMain.run(
+            arguments: ["--only-compiled", "/r", "4"],
+            read: { _ in "" },
+            write: { _ in },
+            writeError: { _ in }
+        )
+        #expect(code == 2)
+    }
+}
