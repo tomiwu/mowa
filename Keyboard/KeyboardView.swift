@@ -14,7 +14,7 @@ struct KeyboardView: View {
             HStack(spacing: 8) {
                 key("globe", label: "Next keyboard", action: .nextKeyboard)
                 key(micSymbol, label: "Microphone", action: model.micAction)
-                key("space", label: "Space", action: .space, grows: true)
+                key("space", label: "Space", action: .space, width: .infinity)
                 key("delete.left", label: "Delete", action: .delete)
                 key("return", label: "Return", action: .returnKey)
             }
@@ -30,13 +30,13 @@ struct KeyboardView: View {
         _ symbol: String,
         label: String,
         action: KeyAction,
-        grows: Bool = false
+        width: CGFloat = 44
     ) -> some View {
         Button {
             perform(action)
         } label: {
             Image(systemName: symbol)
-                .frame(maxWidth: grows ? .infinity : 44, minHeight: 44)
+                .frame(maxWidth: width, minHeight: 44)
         }
         .buttonStyle(.borderedProminent)
         .tint(.gray)

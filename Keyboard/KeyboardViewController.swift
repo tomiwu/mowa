@@ -9,15 +9,8 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        model = KeyboardModel(readStatus: { [store = openStore()] in
-            (try? store?.readSessionStatus()) ?? .noSession
-        })
-        embed(
-            KeyboardView(model: model) { [weak self] action in
-                guard let self else { return }
-                action.perform(on: self)
-            }
-        )
+        model = KeyboardModel(readStatus: readStatus())
+        embed(KeyboardView(model: model) { [unowned self] action in action.perform(on: self) })
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -44,16 +37,18 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
         let application = sequence(first: self as UIResponder, next: \.next)
             .compactMap { $0 as? UIApplication }
             .first
-        guard let url = URL(string: MowaShared.startURLString) else { return }
-        application?.open(url, options: [:], completionHandler: nil)
+        _ = URL(string: MowaShared.startURLString).map {
+            application?.open($0, options: [:], completionHandler: nil)
+        }
     }
 
     func requestStop() {
         notifier.postStopRequested()
     }
 
-    private func openStore() -> SharedStore? {
-        try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
+    private func readStatus() -> @MainActor () -> SessionStatus {
+        let store = try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
+        return { (try? store?.readSessionStatus()) ?? .noSession }
     }
 
     private func embed(_ content: KeyboardView) {
