@@ -9,7 +9,7 @@ import Testing
 private struct FakeEngine: TranscriptionEngine {
     let outcome: Result<Transcript, TranscriptionError>
 
-    func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {
+    func transcribe(_: [Float]) async throws(TranscriptionError) -> Transcript {
         try outcome.get()
     }
 }

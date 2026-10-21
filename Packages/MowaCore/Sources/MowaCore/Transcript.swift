@@ -6,7 +6,7 @@ public struct Transcript: Sendable, Equatable {
     public let text: String
     public let languageCode: String
 
-    public init(text: String, languageCode: String = Transcript.undeterminedLanguage) {
+    public init(text: String, languageCode: String = Self.undeterminedLanguage) {
         self.text = text
         self.languageCode = languageCode
     }
