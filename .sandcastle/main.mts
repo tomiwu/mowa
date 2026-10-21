@@ -208,24 +208,6 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     "--title", issue.title,
     "--body", `This PR implements #${issue.number}.\n\n${sh("git", ["log", "--reverse", "--format=%B", `main..${branch}`])}\n\nThe Linux checks pass (swift-format, swift test for logic packages). The macOS CI is the gate.\n\nCloses #${issue.number}`]);
   console.log(`PR: ${url}`);
-  // TODO: remove this bootstrap rule once #3 (CI workflow) is merged.
-  // Bootstrap: main and the PR have no .github/workflows file, so no CI can start.
-  // The local checks passed, so squash-merge without CI. A PR that adds a workflow waits for its CI.
-  const hasWorkflow = (ref: string) =>
-    spawnSync("gh", ["api", `repos/{owner}/{repo}/contents/.github/workflows?ref=${ref}`], { encoding: "utf8" }).status === 0;
-  if (!hasWorkflow("main") && !hasWorkflow(branch)) {
-    console.log(`Bootstrap: no CI workflow yet. Squash-merge ${url} after the local checks.`);
-    if (spawnSync("gh", ["pr", "merge", url, "--squash", "--delete-branch"], { stdio: "inherit" }).status !== 0) {
-      console.log(`The merge failed for ${url}. Stopping the loop.`);
-      process.exitCode = 1;
-      break;
-    }
-    const bootState = sh("gh", ["issue", "view", String(issue.number), "--json", "state", "--jq", ".state"]);
-    if (bootState !== "CLOSED") sh("gh", ["issue", "close", String(issue.number), "--comment", `Merged in ${url} (bootstrap, no CI yet).`]);
-    spawnSync("git", ["branch", "-D", branch]);
-    merged.add(issue.number);
-    continue;
-  }
   // Merge only when all GitHub Actions checks on the PR pass.
   let hasChecks = false;
   for (let wait = 0; wait < 12 && !hasChecks; wait++) {
