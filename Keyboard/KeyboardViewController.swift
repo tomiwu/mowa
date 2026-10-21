@@ -56,8 +56,9 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
     }
 
     private func report() {
-        makeStore().recordKeyboard(hasFullAccess: hasFullAccess)
-        makeStore().recordInputFocus(isSecure: textDocumentProxy.isSecureTextEntry ?? true)
+        let store = makeStore()
+        store.recordKeyboard(hasFullAccess: hasFullAccess)
+        store.recordInputFocus(isSecure: textDocumentProxy.isSecureTextEntry ?? true)
     }
 
     private func readStatus() -> @MainActor () -> SessionStatus {

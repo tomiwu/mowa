@@ -6,7 +6,7 @@ import Testing
 @MainActor
 struct HistoryTests {
     private let store = InMemoryHistoryStore()
-    private var copied = CopyLog()
+    private let copied = CopyLog()
 
     private func entry(_ text: String, at seconds: Double = 0) -> HistoryEntry {
         HistoryEntry(
