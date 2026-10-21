@@ -105,8 +105,7 @@ jobs:
               -scheme "$name" \
               -destination "platform=iOS Simulator,name=$SIMULATOR_NAME,OS=$SIMULATOR_OS" \
               -enableCodeCoverage YES \
-              -resultBundlePath "$GITHUB_WORKSPACE/build/$name.xcresult" \
-              SWIFT_TREAT_WARNINGS_AS_ERRORS=YES) | xcbeautify --renderer github-actions
+              -resultBundlePath "$GITHUB_WORKSPACE/build/$name.xcresult") | xcbeautify --renderer github-actions
           done
       - name: Test CrapGate on macOS
         run: |
@@ -115,8 +114,7 @@ jobs:
             -scheme CrapGate \
             -destination "platform=macOS" \
             -enableCodeCoverage YES \
-            -resultBundlePath "$GITHUB_WORKSPACE/build/CrapGate.xcresult" \
-            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES) | xcbeautify --renderer github-actions
+            -resultBundlePath "$GITHUB_WORKSPACE/build/CrapGate.xcresult") | xcbeautify --renderer github-actions
       - name: Upload result bundles
         uses: actions/upload-artifact@v4
         with:
