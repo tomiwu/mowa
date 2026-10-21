@@ -27,7 +27,7 @@ struct CSVSplitter {
     private var inQuotes = false
 
     static func split(_ line: Substring) -> [String] {
-        var splitter = CSVSplitter()
+        var splitter = Self()
         line.forEach { splitter.feed($0) }
         return splitter.finish()
     }
