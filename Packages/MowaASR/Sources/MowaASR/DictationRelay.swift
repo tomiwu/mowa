@@ -2,7 +2,7 @@ public import Foundation
 public import MowaCore
 public import MowaShared
 
-/// Transcribes each utterance and sends the text to the keyboard through the App Group.
+/// Transcribes each utterance, corrects the names with the word list and sends the text to the keyboard through the App Group.
 public struct DictationRelay: Sendable {
     private let engine: any TranscriptionEngine
     private let store: SharedStore
@@ -36,9 +36,11 @@ public struct DictationRelay: Sendable {
 
     private func publish(_ transcript: Transcript, duration: Double) async {
         guard !transcript.text.isEmpty else { return }
+        let words = (try? store.readWordList()) ?? []
+        let text = WordCorrector(words: words).correct(transcript.text)
         let result = DictationResult(
             id: makeID(),
-            text: transcript.text,
+            text: text,
             languageCode: transcript.languageCode,
             createdAt: now()
         )

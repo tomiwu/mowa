@@ -74,3 +74,17 @@ Target (NFR5): 90% or more of the names from the word list are correct.
 - Keep (a) when its "all names" value is 90% or more and the Polish names are not worse than (c).
 - Use (c) as the method when (a) is below (c) on Polish names, when (a) makes more wrong replacements than it fixes, or when the memory is too high.
 - When no method reaches 90%, ship (c), tell the user about the limit, and open a new issue.
+
+## Implementation (issue #20)
+
+Method (c), fuzzy correction, is in the app now: `WordCorrector` (`Packages/MowaCore`). `DictationRelay` reads the word list from the App Group store and corrects each transcript before it goes to the history and the keyboard. Method (a) needs a device (CTC model, Polish test, memory) and is not built yet.
+
+Rules: the comparison ignores case and diacritics. The first letter must be the same. A term of up to 3 letters must match exactly. A term of 4 to 6 letters allows 1 edit. A longer term allows 2 edits. A term of several words matches the same number of words that are separated by spaces.
+
+### Measured result
+
+| Test | Cases | Correct | Result |
+| --- | --- | --- | --- |
+| Unit test `nameAccuracyReachesTarget`: 14 typical wrong spellings of 4 names, text only | 14 | 14 | 100% |
+
+This is a text test on Linux. It is **not** the NFR5 measurement. The accuracy on real speech (Parakeet output for 40 recorded sentences, procedure above) is **not measured yet**: this container has no audio and no device. Fill the "(c) Fuzzy correction" row of the table above and keep NFR5 open until a person runs the procedure.

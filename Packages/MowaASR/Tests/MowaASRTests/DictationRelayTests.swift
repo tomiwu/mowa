@@ -66,6 +66,14 @@ struct DictationRelayTests {
         try? SharedStore(directory: directory).readResult()
     }
 
+    @Test func correctsNamesFromWordList() async throws {
+        let relay = try relay(.success(Transcript(text: "jade do wroclaw")))
+        try SharedStore(directory: directory).writeWordList(["Wrocław"])
+        await relay.handle(SpeechSegment(samples: [0.1]))
+        #expect(stored?.text == "jade do Wrocław")
+        #expect(entries.all.first?.text == "jade do Wrocław")
+    }
+
     @Test func storesTextAndNotifiesKeyboard() async throws {
         let relay = try relay(.success(Transcript(text: "Dzień dobry")))
         await relay.handle(SpeechSegment(samples: [0.1]))
