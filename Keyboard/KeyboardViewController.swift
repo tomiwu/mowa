@@ -23,7 +23,7 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
         report()
     }
 
-    override func textDidChange(_ textInput: (any UITextInput)?) {
+    override func textDidChange(_ textInput: Optional<any UITextInput>) {
         super.textDidChange(textInput)
         report()
     }
