@@ -1,0 +1,46 @@
+# id<TAB>group<TAB>reference text. Groups: polish, english, mixed.
+pl01	polish	Dzień dobry, chciałbym zamówić stolik na dwie osoby na piątek wieczorem.
+pl02	polish	Jutro rano mam spotkanie z lekarzem o godzinie dziesiątej trzydzieści.
+pl03	polish	Proszę przesłać mi fakturę na adres podany w ostatniej wiadomości.
+pl04	polish	Pociąg do Krakowa odjeżdża z drugiego peronu za piętnaście minut.
+pl05	polish	Zapomniałem hasła do konta, więc muszę je zresetować.
+pl06	polish	W weekend pojedziemy nad morze, jeśli pogoda będzie ładna.
+pl07	polish	Czy możesz zadzwonić do mnie po południu, kiedy skończysz pracę?
+pl08	polish	Nasza firma zatrudnia trzystu pracowników w całej Polsce.
+pl09	polish	Zakupy na obiad: ziemniaki, marchewka, pół kilo mięsa i śmietana.
+pl10	polish	Dziękuję za szybką odpowiedź, wszystko jest już jasne.
+pl11	polish	Szczęśliwego Nowego Roku życzy cała rodzina z Gdańska.
+pl12	polish	Przepraszam za spóźnienie, korki w centrum Warszawy były ogromne.
+pl13	polish	Dwudziestego trzeciego października odbędzie się zebranie wspólnoty mieszkaniowej.
+pl14	polish	Mój brat uczy się gry na gitarze od trzech lat.
+pl15	polish	Proszę wpisać numer telefonu i kod pocztowy w odpowiednie pola.
+en01	english	Please send me the invoice to the address in my last message.
+en02	english	The meeting starts at ten thirty tomorrow morning in the main office.
+en03	english	I forgot my password, so I need to reset it before lunch.
+en04	english	Can you call me this afternoon when you finish work?
+en05	english	The train to Edinburgh leaves from platform two in fifteen minutes.
+en06	english	Thank you for the quick reply, everything is clear now.
+en07	english	We are planning a trip to the seaside if the weather is good.
+en08	english	Our company employs three hundred people across the country.
+en09	english	Shopping list: potatoes, carrots, half a kilo of beef and cream.
+en10	english	I am sorry for being late, the traffic downtown was terrible.
+en11	english	The committee will review the budget on the twenty third of October.
+en12	english	My brother has been learning to play the guitar for three years.
+en13	english	Please enter your phone number and postal code in the fields below.
+en14	english	She said that the new software update fixes the battery problem.
+en15	english	Remember to book a table for two people on Friday evening.
+mx01	mixed	Wyślij mi ten email z attachmentem przed meetingiem o dziesiątej.
+mx02	mixed	Muszę zrobić update aplikacji, bo deadline mamy w piątek.
+mx03	mixed	Zrobiłem commit i pull request, ale code review jeszcze trwa.
+mx04	mixed	Czy możesz wysłać link do Zooma na mój adres Gmail?
+mx05	mixed	Dzisiaj mamy standup o dziewiątej, a potem planning sprintu.
+mx06	mixed	Zapisałem plik na Google Drive i udostępniłem go całemu teamowi.
+mx07	mixed	Ten bug pojawia się tylko wtedy, gdy użytkownik kliknie button Save.
+mx08	mixed	Let's meet jutro o piętnastej w biurze na Mokotowie.
+mx09	mixed	I think że ta funkcja powinna działać offline.
+mx10	mixed	Please check the dokumentację zanim zaczniesz pisać kod.
+mx11	mixed	Kupiłem nowego iPhone'a i zainstalowałem wszystkie aplikacje z App Store.
+mx12	mixed	The client powiedział, że chce zobaczyć demo w poniedziałek.
+mx13	mixed	Ustaw przypomnienie o calendar invite na jutrzejsze popołudnie.
+mx14	mixed	Mój manager prosił o feedback do prezentacji na konferencję.
+mx15	mixed	Wrzuć proszę screenshot błędu na Slacka, zanim wyjdziesz do domu.
