@@ -16,11 +16,14 @@ public struct FunctionComplexity: Equatable, Sendable {
     public let key: FunctionKey
     public let name: String
     public let complexity: Int
+    /// The last line of the function. Coverage may start on a later line than `key.line`.
+    public let endLine: Int
 
-    public init(key: FunctionKey, name: String, complexity: Int) {
+    public init(key: FunctionKey, name: String, complexity: Int, endLine: Int? = nil) {
         self.key = key
         self.name = name
         self.complexity = complexity
+        self.endLine = max(endLine ?? key.line, key.line)
     }
 }
 
@@ -48,11 +51,25 @@ public enum CrapScore {
     }
 
     /// Joins complexity and coverage on file and start line. No coverage entry means 0.
+    ///
+    /// A multi-line signature can make xccov report a later line than lizard. Then the first
+    /// coverage entry between the start line and the end line counts.
     public static func rows(
         complexities: [FunctionComplexity],
         coverage: [FunctionKey: Double]
     ) -> [CrapRow] {
-        complexities.map { CrapRow(function: $0, coverage: coverage[$0.key] ?? 0) }
+        let linesByFile = Dictionary(grouping: coverage.keys, by: \.file).mapValues {
+            $0.map(\.line).sorted()
+        }
+        return complexities.map { function in
+            let key = function.key
+            let line = linesByFile[key.file]?.first { $0 >= key.line }
+            let match = line.flatMap { $0 <= function.endLine ? $0 : nil } ?? key.line
+            return CrapRow(
+                function: function,
+                coverage: coverage[FunctionKey(file: key.file, line: match)] ?? 0
+            )
+        }
     }
 
     public static func failures(rows: [CrapRow], threshold: Double) -> [CrapRow] {

@@ -40,6 +40,24 @@ struct CrapScoreTests {
         #expect(rows.map(\.crap) == [6])
     }
 
+    @Test func coverageOnLaterSignatureLineIsUsed() {
+        let function = FunctionComplexity(
+            key: FunctionKey(file: "A.swift", line: 1),
+            name: "a",
+            complexity: 2,
+            endLine: 6
+        )
+        let coverage = [
+            FunctionKey(file: "A.swift", line: 3): 0.75,
+            FunctionKey(file: "A.swift", line: 9): 1,
+        ]
+        #expect(
+            CrapScore.rows(complexities: [function], coverage: coverage).map(\.coverage) == [0.75]
+        )
+        let outside = [FunctionKey(file: "A.swift", line: 9): 1.0]
+        #expect(CrapScore.rows(complexities: [function], coverage: outside).map(\.coverage) == [0])
+    }
+
     @Test func failuresUseInclusiveThreshold() {
         let function = FunctionComplexity(
             key: FunctionKey(file: "A.swift", line: 1),

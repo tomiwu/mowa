@@ -12,11 +12,13 @@ public enum LizardParser {
 
     static func parseLine(_ line: Substring) throws(CrapError) -> FunctionComplexity {
         let fields = CSVSplitter.split(line)
-        guard fields.count >= 11, let ccn = Int(fields[1]), let start = Int(fields[9]) else {
+        guard fields.count >= 11, let ccn = Int(fields[1]), let start = Int(fields[9]),
+            let end = Int(fields[10])
+        else {
             throw .malformedLizardLine(String(line))
         }
         let key = FunctionKey(file: fields[6], line: start)
-        return FunctionComplexity(key: key, name: fields[7], complexity: ccn)
+        return FunctionComplexity(key: key, name: fields[7], complexity: ccn, endLine: end)
     }
 }
 
