@@ -34,17 +34,30 @@ function listRuns(branch: string): CiRun[] {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+export interface CiWaitOptions { timeoutMs: number; pollMs: number; startTimeoutMs: number; maxReruns: number }
+// macOS runners are often queued for 6 to 20 minutes. A run that is not started yet ("missing")
+// or is queued ("pending") is not a failure. Wait 30 minutes for a run to show, and 90 minutes in total.
+export const DEFAULT_CI_WAIT: CiWaitOptions = { timeoutMs: 90 * 60_000, pollMs: 30_000, startTimeoutMs: 30 * 60_000, maxReruns: 2 };
+
+// Decide what to do with one CI state. "wait" means: poll again later.
+export function ciDecision(state: CiState, elapsedMs: number, opts: CiWaitOptions = DEFAULT_CI_WAIT): "success" | "failure" | "no-run" | "rerun" | "wait" {
+  if (state === "success" || state === "failure") return state;
+  if (state === "cancelled") return "rerun";
+  if (state === "missing" && elapsedMs > opts.startTimeoutMs) return "no-run";
+  return "wait";
+}
+
 // Wait until the CI runs for this exact SHA exist and complete. A cancelled run is started again
 // (up to maxReruns times). It is not a failure of the code and does not use a fixer attempt.
-export async function waitForCi(branch: string, sha: string, opts = { timeoutMs: 60 * 60_000, pollMs: 30_000, startTimeoutMs: 10 * 60_000, maxReruns: 2 }): Promise<"success" | "failure" | "timeout" | "no-run"> {
+export async function waitForCi(branch: string, sha: string, opts: CiWaitOptions = DEFAULT_CI_WAIT): Promise<"success" | "failure" | "timeout" | "no-run"> {
   const start = Date.now();
   let reruns = 0;
   console.log(`Wait for the CI of ${sha.slice(0, 7)} on ${branch}.`);
   while (Date.now() - start < opts.timeoutMs) {
     const { state, cancelledIds } = classifyRuns(listRuns(branch), sha);
-    if (state === "success" || state === "failure") return state;
-    if (state === "missing" && Date.now() - start > opts.startTimeoutMs) return "no-run";
-    if (state === "cancelled") {
+    const decision = ciDecision(state, Date.now() - start, opts);
+    if (decision === "success" || decision === "failure" || decision === "no-run") return decision;
+    if (decision === "rerun") {
       if (reruns >= opts.maxReruns) return "failure";
       reruns++;
       console.log(`CI run was cancelled for ${sha.slice(0, 7)}. Start it again (${reruns}/${opts.maxReruns}).`);

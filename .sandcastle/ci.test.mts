@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { classifyRuns, type CiRun } from "./ci.mts";
+import { ciDecision, classifyRuns, DEFAULT_CI_WAIT, type CiRun } from "./ci.mts";
 
 const run = (id: number, sha: string, status: string, conclusion: string, workflowName = "CI"): CiRun =>
   ({ databaseId: id, headSha: sha, status, conclusion, workflowName });
@@ -23,4 +23,19 @@ test("the newest run of a workflow wins after a rerun", () => {
 });
 test("a failure wins over a cancelled run in another workflow", () => {
   assert.equal(classifyRuns([run(3, "new", "completed", "cancelled", "A"), run(4, "new", "completed", "failure", "B")], "new").state, "failure");
+});
+test("a queued run is pending, not missing or failure", () => {
+  assert.equal(classifyRuns([run(5, "new", "queued", "")], "new").state, "pending");
+  assert.equal(classifyRuns([run(5, "new", "waiting", "")], "new").state, "pending");
+});
+test("wait for a run that is not started yet, up to 30 minutes", () => {
+  assert.equal(ciDecision("missing", 20 * 60_000), "wait");
+  assert.equal(ciDecision("missing", 31 * 60_000), "no-run");
+  assert.equal(DEFAULT_CI_WAIT.startTimeoutMs, 30 * 60_000);
+});
+test("a queued run is never no-run", () => {
+  assert.equal(ciDecision("pending", 60 * 60_000), "wait");
+});
+test("a cancelled run is started again", () => {
+  assert.equal(ciDecision("cancelled", 0), "rerun");
 });
