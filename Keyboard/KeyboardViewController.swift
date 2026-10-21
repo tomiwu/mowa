@@ -19,13 +19,7 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
         observation = Task { [model, notifier] in
             await model.observe(changes: notifier.sessionChanged())
         }
-        resultObservation = Task { [notifier, weak self] in
-            guard let self else { return }
-            await ResultReceiver(store: makeStore()).observe(
-                changes: notifier.resultReady(),
-                host: self
-            )
-        }
+        resultObservation = Task { await observeResults() }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -58,6 +52,13 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
     private func readStatus() -> @MainActor () -> SessionStatus {
         let store = makeStore()
         return { (try? store?.readSessionStatus()) ?? .noSession }
+    }
+
+    private func observeResults() async {
+        await ResultReceiver(store: makeStore()).observe(
+            changes: notifier.resultReady(),
+            host: self
+        )
     }
 
     private func makeStore() -> SharedStore? {
