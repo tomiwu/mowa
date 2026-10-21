@@ -10,6 +10,9 @@ struct MowaApp: App {
         store: try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
     )
     @Environment(\.scenePhase) private var scenePhase
+    @State private var words = WordListModel(
+        store: try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
+    )
     @State private var models = ModelManager(store: ParakeetModelStore())
 
     var body: some Scene {
@@ -18,6 +21,7 @@ struct MowaApp: App {
                 OnboardingView(model: onboarding)
                 Text(session.status.label)
                 ModelView(models: models)
+                WordListView(model: words)
             }
             .onOpenURL { session.handle(url: $0) }
             .onChange(of: scenePhase, initial: true) { onboarding.refresh() }
