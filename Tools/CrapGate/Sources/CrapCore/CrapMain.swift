@@ -1,13 +1,18 @@
 internal import Foundation
 
-/// The command line behavior: `CrapGate <root> <threshold> <lizard.csv> <xccov.json>...`.
+/// The command line behavior: `CrapGate <root> <threshold> <lizard.csv> <coverage.json>...`.
+/// Each coverage file is xccov JSON or llvm-cov export JSON.
 public enum CrapMain {
     struct Options {
         let root: String
         let threshold: Double
         let lizardPath: String
         let xccovPaths: [String]
+        var onlyCompiled = false
     }
+
+    /// Put this flag first to skip functions that no coverage file lists (not compiled).
+    public static let onlyCompiledFlag = "--only-compiled"
 
     public static let csvHeader = "file,line,function,ccn,coverage,crap"
 
@@ -44,12 +49,29 @@ public enum CrapMain {
     ) throws(CrapError) -> [CrapRow] {
         let complexities = try LizardParser.parse(try readText(options.lizardPath, read))
         let maps = try options.xccovPaths.map { (path) throws(CrapError) in
-            try XccovParser.parse(try readText(path, read), root: options.root)
+            try coverage(try readText(path, read), root: options.root)
         }
-        return CrapScore.rows(complexities: complexities, coverage: XccovParser.merge(maps))
+        let coverage = XccovParser.merge(maps)
+        let measured =
+            options.onlyCompiled
+            ? CrapScore.compiled(complexities: complexities, coverage: coverage) : complexities
+        return CrapScore.rows(complexities: measured, coverage: coverage)
+    }
+
+    /// Accepts xccov JSON (macOS) or llvm-cov export JSON (Linux and macOS).
+    static func coverage(_ json: String, root: String) throws(CrapError) -> [FunctionKey: Double] {
+        LlvmCovParser.isExport(json)
+            ? try LlvmCovParser.parse(json, root: root) : try XccovParser.parse(json, root: root)
     }
 
     static func options(_ arguments: [String]) throws(CrapError) -> Options {
+        guard arguments.first == onlyCompiledFlag else { return try plainOptions(arguments) }
+        var options = try plainOptions(Array(arguments.dropFirst()))
+        options.onlyCompiled = true
+        return options
+    }
+
+    static func plainOptions(_ arguments: [String]) throws(CrapError) -> Options {
         guard arguments.count >= 4, let threshold = Double(arguments[1]) else { throw .usage }
         return Options(
             root: arguments[0],

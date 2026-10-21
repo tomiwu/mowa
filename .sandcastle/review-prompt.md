@@ -47,6 +47,9 @@ Review the code changes on branch `{{BRANCH}}` and improve code clarity, consist
 # RULES
 
 - Every function must have a CRAP score less than 4. Make methods small and well tested.
+- Run `scripts/crap-local.sh` before you finish. It runs the tests with coverage for each package under `Packages/` and `Tools/` and fails if a function has CRAP 4 or more. Fix each function that it lists: add tests, or split the function.
+- Put platform-free logic (sample conversion, buffer math, voice activity probability, pipeline state, text rules) in a package under `Packages/` so that the local gate measures it. Code in `App/` and `Keyboard/` that uses AVFoundation, UIKit, SwiftUI or Core ML is measured only in the macOS CI: keep each such function very small (complexity 1 or 2, no loops, no `if`, no `switch`) and call into a package for the logic.
+- lizard counts `if`, `guard`, `for`, `while`, `case`, `&&`, `||`, `??`, `?:`, and also `?` in optional types. Keep these out of large functions.
 - Do not push. Do not open a PR. Do not close the issue.
 - Do not edit `docs/PRD.md` or `.sandcastle/`.
 - You can edit `.github/workflows/ci.yml`. Keep the job ids `format`, `lint`, `build`, `test` and `crap`. Branch protection requires them. Do not rename or remove these jobs. The `test` job runs the tests. The `crap` job runs `scripts/crap.sh`. You can add new jobs.
@@ -57,7 +60,7 @@ Review the code changes on branch `{{BRANCH}}` and improve code clarity, consist
 If you find improvements to make:
 
 1. Make the changes directly on this branch
-2. Run `swift format lint --strict --recursive .`, `swift test` for Linux packages to ensure nothing is broken
+2. Run `swift format lint --strict --recursive .`, `swift test` for Linux packages and `scripts/crap-local.sh` to ensure nothing is broken
 3. Commit describing the refinements. Write the commit message in English, in ASD-STE100 Simplified Technical English.
 
 If the code is already clean and well-structured, do nothing.

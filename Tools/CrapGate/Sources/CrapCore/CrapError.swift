@@ -5,4 +5,5 @@ public enum CrapError: Error, Equatable {
     case malformedLizardLine(String)
     case noFunctions
     case invalidXccov(String)
+    case invalidLlvmCov(String)
 }

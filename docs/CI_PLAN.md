@@ -40,6 +40,8 @@ What we must write (`scripts/crap.sh` + a small Swift CLI `Tools/CrapGate`, abou
 5. Print a CSV (same as crap4s) and exit 1 if any CRAP >= 4.
 Later option: replace lizard with a swift-syntax visitor, so the tool has no Python. The gate tool itself must pass its own gate, as in crap4s.
 
+Local gate (before push): `scripts/crap-local.sh` runs on Linux (the Sandcastle container) and on macOS. For each package under `Packages/` and `Tools/` it runs `swift test --enable-code-coverage`, reads the llvm-cov export JSON (`swift test --show-codecov-path`), runs lizard on the same folders, and calls `CrapGate --only-compiled`. CrapGate reads xccov JSON or llvm-cov JSON (it finds the format from the `type` field). For llvm-cov, the coverage of a function is the part of its code regions that ran. `--only-compiled` skips functions that have no coverage entry, because they are not compiled on this platform (for example `#if canImport(Darwin)`). The macOS `crap` job does not use this flag and also measures `App/` and `Keyboard/`. The Sandcastle loop runs the local gate before each push.
+
 Result: with threshold 4, a function with complexity 1 always passes; complexity 2 needs more than 21% coverage ((1-c)^3 < 1/2); complexity 3 needs more than 52% coverage ((1-c)^3 < 1/9). Complexity 4 and higher always fails. This is strict, the same as crap4s.
 
 ## 4. Signing and TestFlight

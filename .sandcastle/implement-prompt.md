@@ -19,7 +19,7 @@ Implement issue #{{ISSUE}} on branch `{{BRANCH}}`. Do only this issue.
 1. Read the issue, `docs/PRD.md`, `docs/CODING_STANDARDS.md` and `docs/CI_PLAN.md`. Follow them.
 2. Read the source files and tests that exist.
 3. Use Red-Green-Refactor with Swift Testing. Write a failing test first. Put platform-free logic in Swift packages under `Packages/` so that `swift test` runs on Linux.
-4. Run `swift format format --in-place --recursive .`, `swift test` for each package that builds on Linux. Fix all failures. Code that imports UIKit, SwiftUI, AVFoundation or Core ML cannot build here: write it with care, and keep it small.
+4. Run `swift format format --in-place --recursive .`, `swift test` for each package that builds on Linux, and `scripts/crap-local.sh`. Fix all failures. Code that imports UIKit, SwiftUI, AVFoundation or Core ML cannot build here: write it with care, and keep it small.
 5. Make one git commit. Start the message with `RALPH: #{{ISSUE}}`. Write the task, the key decisions and the files changed. The host copies the commit messages into the PR description.
 
 # Rules
@@ -28,6 +28,9 @@ Implement issue #{{ISSUE}} on branch `{{BRANCH}}`. Do only this issue.
 - Use Swift 6 language mode, strict concurrency `complete`, warnings as errors, Xcode 26.6. If you add a package, use its latest stable version with Swift Package Manager. Do not use CocoaPods or Carthage.
 - Obey the do-not-use list in `docs/CI_PLAN.md`.
 - Every function must have a CRAP score less than 4. Keep functions small and tested.
+- Run `scripts/crap-local.sh` before you finish. It runs the tests with coverage for each package under `Packages/` and `Tools/` and fails if a function has CRAP 4 or more. Fix each function that it lists: add tests, or split the function.
+- Put platform-free logic (sample conversion, buffer math, voice activity probability, pipeline state, text rules) in a package under `Packages/` so that the local gate measures it. Code in `App/` and `Keyboard/` that uses AVFoundation, UIKit, SwiftUI or Core ML is measured only in the macOS CI: keep each such function very small (complexity 1 or 2, no loops, no `if`, no `switch`) and call into a package for the logic.
+- lizard counts `if`, `guard`, `for`, `while`, `case`, `&&`, `||`, `??`, `?:`, and also `?` in optional types. Keep these out of large functions.
 - Do not push. Do not open a PR. Do not close the issue. The host does these steps.
 - Do not edit `docs/PRD.md` or `.sandcastle/`.
 - You can edit `.github/workflows/ci.yml`. Keep the job ids `format`, `lint`, `build`, `test` and `crap`. Branch protection requires them. Do not skip a step when a file is missing. `scripts/crap.sh` always runs in the `crap` job.
