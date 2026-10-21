@@ -2,7 +2,8 @@ public import Foundation
 public import MowaCore
 public import MowaShared
 
-/// Transcribes each utterance, corrects the names with the word list and sends the text to the keyboard through the App Group.
+/// Transcribes each utterance, corrects the names with the word list
+/// and sends the text to the keyboard through the App Group.
 public struct DictationRelay: Sendable {
     private let engine: any TranscriptionEngine
     private let store: SharedStore
