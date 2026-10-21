@@ -16,6 +16,11 @@ public struct SharedStore: Sendable {
         self.init(directory: container)
     }
 
+    /// Opens the store in a container, or in a fallback directory when there is no container.
+    public init(container: URL?, fallback: URL) {
+        self.init(directory: container ?? fallback)
+    }
+
     #if canImport(Darwin)
         /// Opens the store in the App Group container.
         public init(appGroupIdentifier: String) throws(SharedStoreError) {
