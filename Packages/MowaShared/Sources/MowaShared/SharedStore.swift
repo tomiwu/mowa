@@ -50,8 +50,16 @@ public struct SharedStore: Sendable {
         try write(words, to: "words.json")
     }
 
+    public func saveWordList(_ list: WordList) throws(SharedStoreError) {
+        try writeWordList(list.words)
+    }
+
     public func readWordList() throws(SharedStoreError) -> [String] {
         try read([String].self, from: "words.json") ?? []
+    }
+
+    public func loadWordList() throws(SharedStoreError) -> WordList {
+        WordList(words: try readWordList())
     }
 
     public func writeSessionStatus(_ status: SessionStatus) throws(SharedStoreError) {
