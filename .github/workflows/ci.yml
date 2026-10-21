@@ -115,7 +115,7 @@ jobs:
         run: |
           set -o pipefail
           (cd Tools/CrapGate && xcodebuild test \
-            -scheme CrapGate-Package \
+            -scheme CrapGate \
             -destination "platform=macOS" \
             -enableCodeCoverage YES \
             -resultBundlePath "$GITHUB_WORKSPACE/build/CrapGate.xcresult" \
