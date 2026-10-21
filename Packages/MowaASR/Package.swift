@@ -6,17 +6,21 @@ let package = Package(
     platforms: [.iOS(.v26), .macOS(.v26)],
     products: [.library(name: "MowaASR", targets: ["MowaASR"])],
     dependencies: [
-        .package(url: "https://github.com/FluidInference/FluidAudio.git", from: "0.17.7")
+        .package(path: "../MowaCore"),
+        .package(path: "../MowaShared"),
+        .package(url: "https://github.com/FluidInference/FluidAudio.git", from: "0.17.7"),
     ],
     targets: [
         .target(
             name: "MowaASR",
             dependencies: [
+                .product(name: "MowaCore", package: "MowaCore"),
+                .product(name: "MowaShared", package: "MowaShared"),
                 .product(
                     name: "FluidAudio",
                     package: "FluidAudio",
                     condition: .when(platforms: [.iOS, .macOS])
-                )
+                ),
             ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny"),
@@ -24,7 +28,13 @@ let package = Package(
                 .enableUpcomingFeature("MemberImportVisibility"),
             ]
         ),
-        .testTarget(name: "MowaASRTests", dependencies: ["MowaASR"]),
+        .testTarget(
+            name: "MowaASRTests",
+            dependencies: [
+                "MowaASR", .product(name: "MowaCore", package: "MowaCore"),
+                .product(name: "MowaShared", package: "MowaShared"),
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )

@@ -13,6 +13,7 @@
 		000000000000000000A00041 = {isa = PBXBuildFile; fileRef = 000000000000000000A00040; };
 		000000000000000000A00043 = {isa = PBXBuildFile; fileRef = 000000000000000000A00042; };
 		000000000000000000A00045 = {isa = PBXBuildFile; fileRef = 000000000000000000A00044; };
+		000000000000000000A00047 = {isa = PBXBuildFile; fileRef = 000000000000000000A00046; };
 		000000000000000000A00005 = {isa = PBXBuildFile; fileRef = 000000000000000000A00006; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		000000000000000000A00007 = {isa = PBXBuildFile; productRef = 000000000000000000A00008; };
 		000000000000000000A00009 = {isa = PBXBuildFile; productRef = 000000000000000000A0000A; };
@@ -51,6 +52,7 @@
 		000000000000000000A00040 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngineRecorder.swift; sourceTree = "<group>"; };
 		000000000000000000A00042 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSession.swift; sourceTree = "<group>"; };
 		000000000000000000A00044 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleConverter.swift; sourceTree = "<group>"; };
+		000000000000000000A00046 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelView.swift; sourceTree = "<group>"; };
 		000000000000000000A00030 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardView.swift; sourceTree = "<group>"; };
 		000000000000000000A00004 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		000000000000000000A00015 = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 				000000000000000000A00040,
 				000000000000000000A00042,
 				000000000000000000A00044,
+				000000000000000000A00046,
 				000000000000000000A00013,
 				000000000000000000A00014,
 			);
@@ -230,6 +233,7 @@
 				000000000000000000A00041,
 				000000000000000000A00043,
 				000000000000000000A00045,
+				000000000000000000A00047,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
