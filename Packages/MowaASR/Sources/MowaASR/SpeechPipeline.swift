@@ -39,10 +39,13 @@ public actor SpeechPipeline {
 
     func finish() async throws(SpeechPipelineError) -> [SpeechSegment] {
         var segments: [SpeechSegment] = []
-        for chunk in [buffer.flush()].compactMap({ $0 }) {
-            segments += try await process(chunk)
+        if let tail = buffer.flush() {
+            segments += try await process(tail)
         }
-        return segments + [segmenter.finish()].compactMap { $0 }
+        if let last = segmenter.finish() {
+            segments.append(last)
+        }
+        return segments
     }
 
     private func process(_ chunk: [Float]) async throws(SpeechPipelineError) -> [SpeechSegment] {

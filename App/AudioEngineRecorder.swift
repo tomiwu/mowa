@@ -39,7 +39,9 @@ nonisolated final class AudioEngineRecorder: AudioRecorder, @unchecked Sendable 
         let format = input.outputFormat(forBus: 0)
         let converter = SampleConverter(from: format)
         input.installTap(onBus: 0, bufferSize: 4096, format: format) { buffer, _ in
-            _ = converter.samples(from: buffer).map { continuation.yield($0) }
+            if let converted = converter.samples(from: buffer) {
+                continuation.yield(converted)
+            }
         }
         try engine.start()
     }
