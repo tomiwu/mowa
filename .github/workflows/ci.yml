@@ -120,8 +120,6 @@ jobs:
             -enableCodeCoverage YES \
             -resultBundlePath "$GITHUB_WORKSPACE/build/CrapGate.xcresult" \
             SWIFT_TREAT_WARNINGS_AS_ERRORS=YES) | xcbeautify --renderer github-actions
-      - name: Show xccov report fields
-        run: xcrun xccov view --report --json build/MowaCore.xcresult | head -c 2000
       - name: Upload result bundles
         uses: actions/upload-artifact@v4
         with:

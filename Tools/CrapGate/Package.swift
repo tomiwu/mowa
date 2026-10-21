@@ -1,6 +1,13 @@
 // swift-tools-version: 6.2
 import PackageDescription
 
+let swiftSettings: [SwiftSetting] = [
+    .enableUpcomingFeature("ExistentialAny"),
+    .enableUpcomingFeature("InternalImportsByDefault"),
+    .enableUpcomingFeature("MemberImportVisibility"),
+    .treatAllWarnings(as: .error),
+]
+
 let package = Package(
     name: "CrapGate",
     platforms: [.macOS(.v26)],
@@ -8,22 +15,12 @@ let package = Package(
     targets: [
         .target(
             name: "CrapCore",
-            swiftSettings: [
-                .enableUpcomingFeature("ExistentialAny"),
-                .enableUpcomingFeature("InternalImportsByDefault"),
-                .enableUpcomingFeature("MemberImportVisibility"),
-                .treatAllWarnings(as: .error),
-            ]
+            swiftSettings: swiftSettings
         ),
         .executableTarget(
             name: "CrapGate",
             dependencies: ["CrapCore"],
-            swiftSettings: [
-                .enableUpcomingFeature("ExistentialAny"),
-                .enableUpcomingFeature("InternalImportsByDefault"),
-                .enableUpcomingFeature("MemberImportVisibility"),
-                .treatAllWarnings(as: .error),
-            ]
+            swiftSettings: swiftSettings
         ),
         .testTarget(name: "CrapCoreTests", dependencies: ["CrapCore"]),
     ],
