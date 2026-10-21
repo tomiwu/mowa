@@ -9,5 +9,5 @@ public struct SharedSettings: Codable, Equatable, Sendable {
     }
 
     /// Settings that the store returns when nothing is saved.
-    public static let standard = SharedSettings(languageCode: "auto", cleanUpEnabled: false)
+    public static let standard = Self(languageCode: "auto", cleanUpEnabled: false)
 }

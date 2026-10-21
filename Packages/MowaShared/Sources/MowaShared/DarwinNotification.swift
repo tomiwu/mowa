@@ -5,8 +5,8 @@ public enum DarwinNotificationName: String, Sendable {
 
 /// Low-level channel for Darwin notifications. Tests use a fake.
 public protocol NotificationTransport: Sendable {
-    func post(_ name: DarwinNotificationName)
-    func notifications(named name: DarwinNotificationName) -> AsyncStream<Void>
+    func post(_: DarwinNotificationName)
+    func notifications(named _: DarwinNotificationName) -> AsyncStream<Void>
 }
 
 /// Sends and receives the notifications of the dictation flow.
