@@ -71,6 +71,15 @@ public struct SharedStore: Sendable {
         try read(SharedSettings.self, from: "settings.json") ?? .standard
     }
 
+    public func writeKeyboardReport(_ report: KeyboardReport) throws(SharedStoreError) {
+        try write(report, to: "keyboard.json")
+    }
+
+    /// Returns the keyboard report, or `nil` when the keyboard never wrote one.
+    public func readKeyboardReport() throws(SharedStoreError) -> KeyboardReport? {
+        try read(KeyboardReport.self, from: "keyboard.json")
+    }
+
     private func url(for name: String) -> URL {
         directory.appendingPathComponent(name)
     }

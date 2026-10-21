@@ -20,6 +20,7 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
             await model.observe(changes: notifier.sessionChanged())
         }
         resultObservation = Task { await observeResults() }
+        report()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -47,6 +48,10 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
 
     func requestStop() {
         notifier.postStopRequested()
+    }
+
+    private func report() {
+        try? makeStore()?.writeKeyboardReport(KeyboardReport(hasFullAccess: hasFullAccess))
     }
 
     private func readStatus() -> @MainActor () -> SessionStatus {
