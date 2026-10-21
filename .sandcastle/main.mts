@@ -28,6 +28,7 @@ const MAX_FIX_ATTEMPTS = Number(process.env.MAX_FIX_ATTEMPTS ?? "3");
 let agentName = (process.env.AGENT ?? "claude") === "cursor" ? "cursor" : "claude";
 const CURSOR_MODEL = process.env.CURSOR_MODEL ?? "composer-2.5-fast";
 const CLAUDE_MODEL = process.env.CLAUDE_MODEL ?? "claude-sonnet-5-5";
+const IDLE_TIMEOUT_SECONDS = Number(process.env.IDLE_TIMEOUT_SECONDS ?? "1800");
 const LIMIT_ERROR = /credit|quota|usage limit|rate limit|payment|out of (fast )?requests|insufficient/i;
 
 function agent() {
@@ -39,7 +40,7 @@ type RunOptions = Omit<Parameters<sandcastle.Sandbox["run"]>[0], "agent">;
 // Run one agent phase. Change from Cursor to Claude if Cursor has no credits.
 async function runPhase(sandbox: sandcastle.Sandbox, options: RunOptions) {
   try {
-    const result = await sandbox.run({ ...options, agent: agent() });
+    const result = await sandbox.run({ idleTimeoutSeconds: IDLE_TIMEOUT_SECONDS, ...options, agent: agent() });
     if (agentName === "cursor" && !result.commits.length && logHasLimitError(options.name)) throw new Error("cursor limit");
     return result;
   } catch (error) {
@@ -47,7 +48,7 @@ async function runPhase(sandbox: sandcastle.Sandbox, options: RunOptions) {
     if (agentName === "cursor" && (LIMIT_ERROR.test(text) || logHasLimitError(options.name))) {
       console.log(`Cursor failed (${text.slice(0, 200)}). Change to Claude Code and run again.`);
       agentName = "claude";
-      return sandbox.run({ ...options, agent: agent() });
+      return sandbox.run({ idleTimeoutSeconds: IDLE_TIMEOUT_SECONDS, ...options, agent: agent() });
     }
     throw error;
   }
