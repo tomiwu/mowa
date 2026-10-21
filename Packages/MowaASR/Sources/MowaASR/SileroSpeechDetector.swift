@@ -17,11 +17,13 @@
         }
 
         public func probability(of chunk: [Float]) async throws(SpeechPipelineError) -> Float {
-            let result = try await mapFailure(to: .detectionFailed) {
-                try await manager.processStreamingChunk(chunk, state: state)
+            do {
+                let result = try await manager.processStreamingChunk(chunk, state: state)
+                state = result.state
+                return result.probability
+            } catch {
+                throw .detectionFailed
             }
-            state = result.state
-            return result.probability
         }
     }
 #endif
