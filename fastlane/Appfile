@@ -1,0 +1,2 @@
+app_identifier("com.tomiwu.mowa")
+team_id(ENV["APPLE_TEAM_ID"])

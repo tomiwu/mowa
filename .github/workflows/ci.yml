@@ -115,6 +115,8 @@ jobs:
             -destination "platform=macOS" \
             -enableCodeCoverage YES \
             -resultBundlePath "$GITHUB_WORKSPACE/build/CrapGate.xcresult") | xcbeautify --renderer github-actions
+      - name: Test scripts/check_secrets.sh
+        run: scripts/tests/check_secrets_test.sh
       - name: Upload result bundles
         uses: actions/upload-artifact@v4
         with:
@@ -141,3 +143,29 @@ jobs:
         run: scripts/tests/crap_test.sh
       - name: CRAP gate
         run: scripts/crap.sh build/*.xcresult
+
+  testflight:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: [format, lint, build, test, crap]
+    runs-on: macos-26
+    env:
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check release secrets
+        run: scripts/check_secrets.sh
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: Set up Ruby and fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: Build and upload to TestFlight
+        run: bundle exec fastlane beta
