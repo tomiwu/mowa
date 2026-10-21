@@ -10,14 +10,20 @@ public struct SharedStore: Sendable {
         self.directory = directory
     }
 
+    /// Opens the store in a container, or fails when there is no container.
+    init(container: URL?) throws(SharedStoreError) {
+        guard let container else { throw .containerUnavailable }
+        self.init(directory: container)
+    }
+
     #if canImport(Darwin)
         /// Opens the store in the App Group container.
         public init(appGroupIdentifier: String) throws(SharedStoreError) {
-            let container = FileManager.default.containerURL(
-                forSecurityApplicationGroupIdentifier: appGroupIdentifier
+            try self.init(
+                container: FileManager.default.containerURL(
+                    forSecurityApplicationGroupIdentifier: appGroupIdentifier
+                )
             )
-            guard let container else { throw .containerUnavailable }
-            self.init(directory: container)
         }
     #endif
 

@@ -74,4 +74,17 @@ struct SharedStoreTests {
         let store = SharedStore(directory: URL(fileURLWithPath: "/nonexistent/mowa"))
         #expect(throws: SharedStoreError.writeFailed) { try store.writeWordList([]) }
     }
+
+    @Test func missingContainerThrowsContainerUnavailable() {
+        #expect(throws: SharedStoreError.containerUnavailable) {
+            try SharedStore(container: nil)
+        }
+    }
+
+    @Test func containerOpensStore() throws {
+        let (_, directory) = try makeStore()
+        let store = try SharedStore(container: directory)
+        try store.writeWordList(["a"])
+        #expect(try store.readWordList() == ["a"])
+    }
 }
