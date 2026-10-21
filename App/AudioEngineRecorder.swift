@@ -7,7 +7,11 @@ nonisolated final class AudioEngineRecorder: AudioRecorder, @unchecked Sendable 
     private let engine = AVAudioEngine()
 
     func start() throws(AudioRecorderError) {
-        try Result { try run() }.mapError { _ in AudioRecorderError.audioSessionFailed }.get()
+        do {
+            try run()
+        } catch {
+            throw .audioSessionFailed
+        }
     }
 
     func stop() {
