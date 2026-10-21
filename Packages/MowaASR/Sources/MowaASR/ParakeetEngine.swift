@@ -11,12 +11,15 @@
         private let loader: LoadOnce<AsrManager>
 
         public init(store: ParakeetModelStore) {
-            loader = LoadOnce(isReady: { store.isInstalled }) {
-                let models = try await AsrModels.load(from: store.directory, version: .v3)
-                let manager = AsrManager()
-                try await manager.loadModels(models)
-                return manager
-            }
+            loader = LoadOnce(
+                isReady: { store.isInstalled },
+                load: {
+                    let models = try await AsrModels.load(from: store.directory, version: .v3)
+                    let manager = AsrManager()
+                    try await manager.loadModels(models)
+                    return manager
+                }
+            )
         }
 
         public func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {
