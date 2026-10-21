@@ -6,11 +6,11 @@ import Testing
 final class FakeTransport: NotificationTransport {
     private let observers = Mutex<[AsyncStream<Void>.Continuation]>([])
 
-    func post(_ name: DarwinNotificationName) {
+    func post(_: DarwinNotificationName) {
         observers.withLock { $0.forEach { $0.yield() } }
     }
 
-    func notifications(named name: DarwinNotificationName) -> AsyncStream<Void> {
+    func notifications(named _: DarwinNotificationName) -> AsyncStream<Void> {
         let (stream, continuation) = AsyncStream<Void>.makeStream()
         observers.withLock { $0.append(continuation) }
         return stream
