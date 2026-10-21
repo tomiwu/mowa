@@ -115,6 +115,14 @@ jobs:
             -destination "platform=macOS" \
             -enableCodeCoverage YES \
             -resultBundlePath "$GITHUB_WORKSPACE/build/CrapGate.xcresult") | xcbeautify --renderer github-actions
+      - name: Test WerScript on macOS
+        run: |
+          set -o pipefail
+          (cd Tools/WerScript && xcodebuild test \
+            -scheme WerScript \
+            -destination "platform=macOS" \
+            -enableCodeCoverage YES \
+            -resultBundlePath "$GITHUB_WORKSPACE/build/WerScript.xcresult") | xcbeautify --renderer github-actions
       - name: Test scripts/check_secrets.sh
         run: scripts/tests/check_secrets_test.sh
       - name: Upload result bundles
