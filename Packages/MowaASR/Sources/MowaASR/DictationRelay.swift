@@ -9,35 +9,47 @@ public struct DictationRelay: Sendable {
     private let notifier: DarwinNotifier
     private let makeID: @Sendable () -> UUID
     private let now: @Sendable () -> Date
+    private let history: @Sendable (HistoryEntry) async -> Void
 
     public init(
         engine: any TranscriptionEngine,
         store: SharedStore,
         notifier: DarwinNotifier,
         makeID: @escaping @Sendable () -> UUID = { UUID() },
-        now: @escaping @Sendable () -> Date = { Date() }
+        now: @escaping @Sendable () -> Date = { Date() },
+        history: @escaping @Sendable (HistoryEntry) async -> Void = { _ in }
     ) {
         self.engine = engine
         self.store = store
         self.notifier = notifier
         self.makeID = makeID
         self.now = now
+        self.history = history
     }
 
     /// Transcribes the utterance. The audio stays on the device. A failed or empty
     /// transcription sends nothing.
     public func handle(_ segment: SpeechSegment) async {
         guard let transcript = try? await engine.transcribe(segment.samples) else { return }
-        publish(transcript)
+        await publish(transcript, duration: segment.duration)
     }
 
-    private func publish(_ transcript: Transcript) {
+    private func publish(_ transcript: Transcript, duration: Double) async {
         guard !transcript.text.isEmpty else { return }
         let result = DictationResult(
             id: makeID(),
             text: transcript.text,
             languageCode: transcript.languageCode,
             createdAt: now()
+        )
+        await history(
+            HistoryEntry(
+                id: result.id,
+                date: result.createdAt,
+                text: result.text,
+                languageCode: result.languageCode,
+                duration: duration
+            )
         )
         guard (try? store.writeResult(result)) != nil else { return }
         notifier.postResultReady()

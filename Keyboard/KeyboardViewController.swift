@@ -2,6 +2,9 @@ import MowaShared
 import SwiftUI
 import UIKit
 
+/// Spelled as an alias so that the override has no `?` in its signature (CRAP).
+typealias OptionalTextInput = (any UITextInput)?
+
 final class KeyboardViewController: UIInputViewController, KeyboardHost {
     private let notifier = DarwinNotifier(transport: SystemNotificationTransport())
     private var model = KeyboardModel(readStatus: { .noSession })
@@ -20,6 +23,11 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
             await model.observe(changes: notifier.sessionChanged())
         }
         resultObservation = Task { await observeResults() }
+        report()
+    }
+
+    override func textDidChange(_ textInput: OptionalTextInput) {
+        super.textDidChange(textInput)
         report()
     }
 
@@ -51,7 +59,9 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
     }
 
     private func report() {
-        makeStore().recordKeyboard(hasFullAccess: hasFullAccess)
+        let store = makeStore()
+        store.recordKeyboard(hasFullAccess: hasFullAccess)
+        store.recordInputFocus(isSecure: textDocumentProxy.isSecureTextEntry ?? true)
     }
 
     private func readStatus() -> @MainActor () -> SessionStatus {
