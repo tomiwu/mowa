@@ -2,6 +2,14 @@
 public struct SpeechSegment: Sendable, Equatable {
     public let samples: [Float]
 
+    /// Sample rate of the samples in hertz.
+    public static let sampleRate = 16_000.0
+
+    /// Length of the utterance in seconds.
+    public var duration: Double {
+        Double(samples.count) / Self.sampleRate
+    }
+
     public init(samples: [Float]) {
         self.samples = samples
     }

@@ -23,6 +23,11 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
         report()
     }
 
+    override func textDidChange(_ textInput: (any UITextInput)?) {
+        super.textDidChange(textInput)
+        report()
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         observation?.cancel()
@@ -52,6 +57,7 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
 
     private func report() {
         makeStore().recordKeyboard(hasFullAccess: hasFullAccess)
+        makeStore().recordInputFocus(isSecure: textDocumentProxy.isSecureTextEntry ?? true)
     }
 
     private func readStatus() -> @MainActor () -> SessionStatus {

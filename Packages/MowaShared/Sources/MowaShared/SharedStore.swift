@@ -88,6 +88,15 @@ public struct SharedStore: Sendable {
         try read(KeyboardReport.self, from: "keyboard.json")
     }
 
+    public func writeInputFocus(_ focus: InputFocus) throws(SharedStoreError) {
+        try write(focus, to: "focus.json")
+    }
+
+    /// Returns the focus of the keyboard, or `nil` when the keyboard never wrote one.
+    public func readInputFocus() throws(SharedStoreError) -> InputFocus? {
+        try read(InputFocus.self, from: "focus.json")
+    }
+
     private func url(for name: String) -> URL {
         directory.appendingPathComponent(name)
     }

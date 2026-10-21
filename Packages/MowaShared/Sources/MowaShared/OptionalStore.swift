@@ -11,4 +11,13 @@ extension SharedStore? {
     public func keyboardReport() -> KeyboardReport? {
         (try? self?.readKeyboardReport()) ?? nil
     }
+
+    public func recordInputFocus(isSecure: Bool) {
+        try? self?.writeInputFocus(InputFocus(isSecure: isSecure))
+    }
+
+    /// Tells if the focused text field is secure. An unknown field counts as secure.
+    public func isSecureFieldFocused() -> Bool {
+        (try? self?.readInputFocus())?.isSecure ?? true
+    }
 }

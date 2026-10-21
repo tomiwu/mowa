@@ -47,4 +47,19 @@ struct OptionalStoreTests {
             value == OnboardingState(keyboardAdded: true, fullAccess: true, microphone: .denied)
         )
     }
+
+    @Test func unknownFocusCountsAsSecure() throws {
+        let missing: SharedStore? = nil
+        #expect(missing.isSecureFieldFocused())
+        let empty: SharedStore? = try makeStore()
+        #expect(empty.isSecureFieldFocused())
+    }
+
+    @Test func recordedFocusIsRead() throws {
+        let store: SharedStore? = try makeStore()
+        store.recordInputFocus(isSecure: false)
+        #expect(!store.isSecureFieldFocused())
+        store.recordInputFocus(isSecure: true)
+        #expect(store.isSecureFieldFocused())
+    }
 }

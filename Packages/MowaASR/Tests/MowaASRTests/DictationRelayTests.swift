@@ -26,11 +26,23 @@ private final class CountingTransport: NotificationTransport {
     }
 }
 
+private final class EntryLog: Sendable {
+    private let items = Mutex<[HistoryEntry]>([])
+
+    var all: [HistoryEntry] { items.withLock { $0 } }
+
+    func add(_ entry: HistoryEntry) {
+        items.withLock { $0.append(entry) }
+    }
+}
+
 struct DictationRelayTests {
     private let directory = FileManager.default.temporaryDirectory
         .appendingPathComponent(UUID().uuidString)
     private let transport = CountingTransport()
     private let id = UUID()
+
+    private let entries = EntryLog()
 
     private func relay(
         _ outcome: Result<Transcript, TranscriptionError>,
@@ -45,7 +57,8 @@ struct DictationRelayTests {
             store: SharedStore(directory: directory ?? self.directory),
             notifier: DarwinNotifier(transport: transport),
             makeID: { [id] in id },
-            now: { Date(timeIntervalSince1970: 5) }
+            now: { Date(timeIntervalSince1970: 5) },
+            history: { [entries] in entries.add($0) }
         )
     }
 
@@ -66,6 +79,29 @@ struct DictationRelayTests {
                 )
         )
         #expect(transport.posts.withLock { $0 } == 1)
+    }
+
+    @Test func historyGetsTextLanguageDateAndDuration() async throws {
+        let relay = try relay(.success(Transcript(text: "tak", languageCode: "pl")))
+        await relay.handle(SpeechSegment(samples: [Float](repeating: 0, count: 8_000)))
+        #expect(
+            entries.all
+                == [
+                    HistoryEntry(
+                        id: id,
+                        date: Date(timeIntervalSince1970: 5),
+                        text: "tak",
+                        languageCode: "pl",
+                        duration: 0.5
+                    )
+                ]
+        )
+    }
+
+    @Test func emptyTextIsNotInHistory() async throws {
+        let relay = try relay(.success(Transcript(text: "")))
+        await relay.handle(SpeechSegment(samples: [0.1]))
+        #expect(entries.all.isEmpty)
     }
 
     @Test func failedTranscriptionSendsNothing() async throws {
