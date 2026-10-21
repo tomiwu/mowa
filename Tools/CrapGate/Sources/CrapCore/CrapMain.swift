@@ -49,17 +49,18 @@ public enum CrapMain {
     ) throws(CrapError) -> [CrapRow] {
         let complexities = try LizardParser.parse(try readText(options.lizardPath, read))
         let maps = try options.xccovPaths.map { (path) throws(CrapError) in
-            try coverage(try readText(path, read), root: options.root)
+            try coverageMap(try readText(path, read), root: options.root)
         }
-        let coverage = XccovParser.merge(maps)
+        let merged = XccovParser.merge(maps)
         let measured =
             options.onlyCompiled
-            ? CrapScore.compiled(complexities: complexities, coverage: coverage) : complexities
-        return CrapScore.rows(complexities: measured, coverage: coverage)
+            ? CrapScore.compiled(complexities: complexities, coverage: merged) : complexities
+        return CrapScore.rows(complexities: measured, coverage: merged)
     }
 
     /// Accepts xccov JSON (macOS) or llvm-cov export JSON (Linux and macOS).
-    static func coverage(_ json: String, root: String) throws(CrapError) -> [FunctionKey: Double] {
+    static func coverageMap(_ json: String, root: String) throws(CrapError) -> [FunctionKey: Double]
+    {
         LlvmCovParser.isExport(json)
             ? try LlvmCovParser.parse(json, root: root) : try XccovParser.parse(json, root: root)
     }
