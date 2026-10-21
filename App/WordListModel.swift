@@ -14,25 +14,28 @@ final class WordListModel {
     }
 
     func add(_ word: String) -> WordList.Outcome {
-        persist(list.add(word))
+        let outcome = list.add(word)
+        save()
+        return outcome
     }
 
     func edit(at index: Int, to word: String) -> WordList.Outcome {
-        persist(list.edit(at: index, to: word))
+        let outcome = list.edit(at: index, to: word)
+        save()
+        return outcome
     }
 
     func delete(at offsets: IndexSet) {
         list.delete(at: offsets)
-        persist(.added)
+        save()
     }
 
     func importText(_ text: String) {
         list.importText(text)
-        persist(.added)
+        save()
     }
 
-    private func persist(_ outcome: WordList.Outcome) -> WordList.Outcome {
+    private func save() {
         try? store?.saveWordList(list)
-        return outcome
     }
 }
