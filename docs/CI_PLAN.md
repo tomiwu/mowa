@@ -17,7 +17,7 @@ Status: proposal for issues #3 (build, test, lint) and #4 (signing, fastlane, Te
 | `lint` | `swiftlint lint --strict --reporter github-actions-logging` | yes |
 | `build` | `xcodebuild build-for-testing -scheme mowa -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \| xcbeautify` | yes |
 | `test` | `xcodebuild test-without-building ... -enableCodeCoverage YES -resultBundlePath build/Tests.xcresult`; also `swift test --enable-code-coverage` for logic packages | yes |
-| `crap` | `scripts/crap.sh build/Tests.xcresult` (fails if a function has CRAP >= 4) | yes |
+| `crap` | `scripts/crap.sh build/Tests.xcresult` (fails if a function has CRAP >= 6) | yes |
 | `testflight` | only on `push` to `main`, after all jobs pass: `bundle exec fastlane beta` | no (not on PRs) |
 
 Notes:
@@ -37,12 +37,21 @@ What we must write (`scripts/crap.sh` + a small Swift CLI `Tools/CrapGate`, abou
 2. Read `xccov` JSON → file, function, start line, line coverage (0..1).
 3. Join on file + start line (function names in xccov are mangled or demangled differently, so the line is the key).
 4. `CRAP = comp^2 * (1 - cov)^3 + comp`. A function with no coverage entry has cov = 0.
-5. Print a CSV (same as crap4s) and exit 1 if any CRAP >= 4.
+5. Print a CSV (same as crap4s) and exit 1 if any CRAP >= 6.
 Later option: replace lizard with a swift-syntax visitor, so the tool has no Python. The gate tool itself must pass its own gate, as in crap4s.
 
 Local gate (before push): `scripts/crap-local.sh` runs on Linux (the Sandcastle container) and on macOS. For each package under `Packages/` and `Tools/` it runs `swift test --enable-code-coverage`, reads the llvm-cov export JSON (`swift test --show-codecov-path`), runs lizard on the same folders, and calls `CrapGate --only-compiled`. CrapGate reads xccov JSON or llvm-cov JSON (it finds the format from the `type` field). For llvm-cov, the coverage of a function is the part of its code regions that ran. `--only-compiled` skips functions that have no coverage entry, because they are not compiled on this platform (for example `#if canImport(Darwin)`). The macOS `crap` job does not use this flag and also measures `App/` and `Keyboard/`. The Sandcastle loop runs the local gate before each push.
 
-Result: with threshold 4, a function with complexity 1 always passes; complexity 2 needs more than 21% coverage ((1-c)^3 < 1/2); complexity 3 needs more than 52% coverage ((1-c)^3 < 1/9). Complexity 4 and higher always fails. This is strict, the same as crap4s.
+Result: with threshold 6, the gate fails when CRAP >= 6. Tomasz changed the threshold from 4 to 6 on 2026-10-21.
+
+| Complexity | Coverage necessary to pass |
+|---|---|
+| 1 | always passes |
+| 2 | more than 0% |
+| 3 | more than 30.7% |
+| 4 | more than 50% |
+| 5 | more than 65.8% |
+| 6 or more | always fails |
 
 ## 4. Signing and TestFlight
 

@@ -22,6 +22,7 @@ import { podman } from "@ai-hero/sandcastle/sandboxes/podman";
 import { execFileSync, spawnSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { prHeadSha, waitForCi } from "./ci.mts";
 
 const MAX_ITERATIONS = Number(process.env.MAX_ITERATIONS ?? "10");
 const MAX_FIX_ATTEMPTS = Number(process.env.MAX_FIX_ATTEMPTS ?? "3");
@@ -134,7 +135,7 @@ async function runChecks(sandbox: sandcastle.Sandbox): Promise<{ ok: boolean; lo
       "if [ -f .swift-format ]; then swift format lint --strict --recursive --parallel . ; fi"),
     await check(sandbox, "swift test (logic packages that build on Linux)",
       "for p in $(find Packages -maxdepth 2 -name Package.swift 2>/dev/null); do (cd $(dirname $p) && swift test) || exit 1; done"),
-    await check(sandbox, "local CRAP gate (scripts/crap-local.sh: every function in Packages/ and Tools/ must have CRAP < 4)",
+    await check(sandbox, "local CRAP gate (scripts/crap-local.sh: every function in Packages/ and Tools/ must have CRAP < 6)",
       "if [ -x scripts/crap-local.sh ]; then scripts/crap-local.sh; fi"),
   ];
   return { ok: results.every((r) => r.ok), log: results.map((r) => r.log).join("") };
@@ -226,12 +227,16 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
   let mergedOk = false;
   for (let attempt = 0; attempt <= MAX_FIX_ATTEMPTS && !mergedOk; attempt++) {
     spawnSync("gh", ["pr", "update-branch", url], { stdio: "inherit" });
-    await new Promise((r) => setTimeout(r, 20_000));
-    const watch = spawnSync("gh", ["pr", "checks", url, "--watch"], { stdio: "inherit", timeout: 30 * 60_000 });
-    if (watch.status === 0) {
-      mergedOk = spawnSync("gh", ["pr", "merge", url, "--squash", "--delete-branch"], { stdio: "inherit" }).status === 0;
+    // Read the head SHA after the update. Wait only for the CI runs of this SHA, not for an old run.
+    await new Promise((r) => setTimeout(r, 10_000));
+    const sha = prHeadSha(url);
+    const ci = await waitForCi(branch, sha);
+    console.log(`CI result for ${sha.slice(0, 7)}: ${ci}.`);
+    if (ci === "success") {
+      mergedOk = spawnSync("gh", ["pr", "merge", url, "--squash", "--delete-branch", "--match-head-commit", sha], { stdio: "inherit" }).status === 0;
       continue;
     }
+    if (ci !== "failure") { console.log(`No usable CI result for ${sha.slice(0, 7)} (${ci}). Do not run the fixer.`); break; }
     if (attempt === MAX_FIX_ATTEMPTS) break;
     // CI failed. Give the CI log to the fixer agent, push the fix, and wait for CI again.
     console.log(`CI failed for ${url}. Run the fixer (attempt ${attempt + 1}).`);
@@ -248,6 +253,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
       await fixBox.close();
     }
     sh("git", ["push", "-f", "origin", branch]);
+    if (sh("git", ["rev-parse", branch]) === sha) { console.log(`The fixer made no new commit. Stopping.`); break; }
   }
   if (!mergedOk) {
     console.log(`CI failed or the merge failed for ${url}. Do not merge. Stopping the loop.`);

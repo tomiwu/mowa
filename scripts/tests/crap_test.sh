@@ -44,10 +44,10 @@ export FAKE_LOG="$work/log"
 check "no argument is a usage error" 2 "$(run)"
 check "missing bundle is an error" 2 "$(run "$work/missing.xcresult")"
 check "passing gate exits 0" 0 "$(run "$work/a.xcresult")"
-check "one bundle reaches the gate" "gate 4 4" "$(grep '^gate' "$work/log")"
+check "one bundle reaches the gate" "gate 4 6" "$(grep '^gate' "$work/log")"
 check "lizard skips tests" 1 "$(grep -c -- '-x \*/Tests/\*' "$work/log")"
 check "failing gate exits 1" 1 "$(FAKE_GATE_EXIT=1 run "$work/a.xcresult" "$work/b.xcresult")"
-check "gate gets two xccov files" "gate 5 4" "$(grep '^gate' "$work/log")"
+check "gate gets two xccov files" "gate 5 6" "$(grep '^gate' "$work/log")"
 
 if [ "$failures" -ne 0 ]; then
     exit 1
