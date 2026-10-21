@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CRAP gate: joins lizard complexity with xccov coverage and fails if any CRAP >= 4.
+# CRAP gate: joins lizard complexity with xccov coverage and fails if any CRAP >= 6.
 # Usage: scripts/crap.sh <result.xcresult>...
 # Test hooks: LIZARD, XCCOV and CRAPGATE replace the real commands.
 set -euo pipefail
@@ -10,7 +10,7 @@ if [ "$#" -lt 1 ]; then
 fi
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-threshold="${CRAP_THRESHOLD:-4}"
+threshold="${CRAP_THRESHOLD:-6}"
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 

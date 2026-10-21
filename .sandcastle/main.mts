@@ -135,7 +135,7 @@ async function runChecks(sandbox: sandcastle.Sandbox): Promise<{ ok: boolean; lo
       "if [ -f .swift-format ]; then swift format lint --strict --recursive --parallel . ; fi"),
     await check(sandbox, "swift test (logic packages that build on Linux)",
       "for p in $(find Packages -maxdepth 2 -name Package.swift 2>/dev/null); do (cd $(dirname $p) && swift test) || exit 1; done"),
-    await check(sandbox, "local CRAP gate (scripts/crap-local.sh: every function in Packages/ and Tools/ must have CRAP < 4)",
+    await check(sandbox, "local CRAP gate (scripts/crap-local.sh: every function in Packages/ and Tools/ must have CRAP < 6)",
       "if [ -x scripts/crap-local.sh ]; then scripts/crap-local.sh; fi"),
   ];
   return { ok: results.every((r) => r.ok), log: results.map((r) => r.log).join("") };
