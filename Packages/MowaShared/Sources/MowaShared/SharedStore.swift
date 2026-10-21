@@ -49,6 +49,15 @@ public struct SharedStore: Sendable {
         try read([String].self, from: "words.json") ?? []
     }
 
+    public func writeSessionStatus(_ status: SessionStatus) throws(SharedStoreError) {
+        try write(status, to: "session.json")
+    }
+
+    /// Returns the session status, or `.noSession` when the app wrote none.
+    public func readSessionStatus() throws(SharedStoreError) -> SessionStatus {
+        try read(SessionStatus.self, from: "session.json") ?? .noSession
+    }
+
     public func writeSettings(_ settings: SharedSettings) throws(SharedStoreError) {
         try write(settings, to: "settings.json")
     }

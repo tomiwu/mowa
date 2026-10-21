@@ -64,6 +64,17 @@ struct SharedStoreTests {
         #expect(try store.readSettings() == .standard)
     }
 
+    @Test func sessionStatusRoundTrips() throws {
+        let (store, _) = try makeStore()
+        try store.writeSessionStatus(.recording)
+        #expect(try store.readSessionStatus() == .recording)
+    }
+
+    @Test func sessionStatusIsNoSessionWhenMissing() throws {
+        let (store, _) = try makeStore()
+        #expect(try store.readSessionStatus() == .noSession)
+    }
+
     @Test func corruptFileThrowsReadFailed() throws {
         let (store, directory) = try makeStore()
         try Data("not json".utf8).write(to: directory.appendingPathComponent("result.json"))

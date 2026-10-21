@@ -5,4 +5,7 @@ public enum MowaShared {
 
     /// URL scheme that the keyboard uses to open the app.
     public static let urlScheme = "mowa"
+
+    /// URL that opens the app and starts a dictation session.
+    public static let startURLString = "\(urlScheme)://start"
 }
