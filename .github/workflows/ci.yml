@@ -93,7 +93,7 @@ jobs:
       - name: Test logic packages with swift test
         run: |
           for package in Packages/* Tools/*; do
-            swift test --package-path "$package" --enable-code-coverage
+            swift test --package-path "$package" --enable-code-coverage -Xswiftc -warnings-as-errors
           done
       - name: Test packages on the simulator
         run: |

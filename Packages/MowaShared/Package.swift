@@ -12,7 +12,6 @@ let package = Package(
                 .enableUpcomingFeature("ExistentialAny"),
                 .enableUpcomingFeature("InternalImportsByDefault"),
                 .enableUpcomingFeature("MemberImportVisibility"),
-                .treatAllWarnings(as: .error),
             ]
         ),
         .testTarget(name: "MowaSharedTests", dependencies: ["MowaShared"]),
