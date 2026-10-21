@@ -51,12 +51,12 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
     }
 
     private func report() {
-        try? makeStore()?.writeKeyboardReport(KeyboardReport(hasFullAccess: hasFullAccess))
+        makeStore().recordKeyboard(hasFullAccess: hasFullAccess)
     }
 
     private func readStatus() -> @MainActor () -> SessionStatus {
         let store = makeStore()
-        return { (try? store?.readSessionStatus()) ?? .noSession }
+        return { store.sessionStatus() }
     }
 
     private func observeResults() async {

@@ -64,3 +64,17 @@ public struct OnboardingState: Equatable, Sendable {
         currentStep == nil
     }
 }
+
+extension OnboardingState {
+    /// Builds the state from the keyboard report and the microphone permission.
+    public static func detect(
+        report: KeyboardReport?,
+        microphone: MicrophonePermission
+    ) -> OnboardingState {
+        OnboardingState(
+            keyboardAdded: report != nil,
+            fullAccess: report?.hasFullAccess == true,
+            microphone: microphone
+        )
+    }
+}

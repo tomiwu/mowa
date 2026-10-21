@@ -22,12 +22,12 @@ final class OnboardingModel {
     }
 
     func refresh() {
-        let report = (try? store?.readKeyboardReport()) ?? nil
-        state = OnboardingState(
-            keyboardAdded: report != nil,
-            fullAccess: report?.hasFullAccess == true,
-            microphone: Self.permissions[AVAudioApplication.shared.recordPermission]
-                ?? .undetermined
+        state = OnboardingState.detect(
+            report: store.keyboardReport(),
+            microphone: Self.permissions[
+                AVAudioApplication.shared.recordPermission,
+                default: .undetermined
+            ]
         )
     }
 
