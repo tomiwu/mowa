@@ -44,9 +44,8 @@ final class KeyboardViewController: UIInputViewController, KeyboardHost {
         let application = sequence(first: self as UIResponder, next: \.next)
             .compactMap { $0 as? UIApplication }
             .first
-        _ = URL(string: MowaShared.startURLString).map {
-            application?.open($0, options: [:], completionHandler: nil)
-        }
+        guard let url = URL(string: MowaShared.startURLString) else { return }
+        application?.open(url, options: [:], completionHandler: nil)
     }
 
     func requestStop() {
