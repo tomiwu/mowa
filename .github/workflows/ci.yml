@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  XCODE_APP: /Applications/Xcode_26.6.app
+  SIMULATOR_NAME: iPhone 17
+  SIMULATOR_OS: "26.5"
+  SWIFTLINT_VERSION: 0.65.1
+  LIZARD_VERSION: 1.24.1
+
+jobs:
+  format:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: Check formatting
+        run: xcrun swift-format lint --strict --recursive --parallel App Keyboard Packages Tools
+
+  lint:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: Install SwiftLint ${{ env.SWIFTLINT_VERSION }}
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/swiftlint.zip" \
+            "https://github.com/realm/SwiftLint/releases/download/${SWIFTLINT_VERSION}/portable_swiftlint.zip"
+          mkdir -p "$RUNNER_TEMP/swiftlint"
+          unzip -q "$RUNNER_TEMP/swiftlint.zip" -d "$RUNNER_TEMP/swiftlint"
+          echo "$RUNNER_TEMP/swiftlint" >> "$GITHUB_PATH"
+      - name: Check SwiftLint version
+        run: test "$(swiftlint --version)" = "$SWIFTLINT_VERSION"
+      - name: Lint
+        run: swiftlint lint --strict --reporter github-actions-logging
+
+  build:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: Cache DerivedData and SPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData
+            ~/Library/Caches/org.swift.swiftpm
+          key: build-${{ runner.os }}-${{ hashFiles('**/Package.swift', '**/Package.resolved', 'mowa.xcodeproj/project.pbxproj') }}
+          restore-keys: build-${{ runner.os }}-
+      - name: List simulators
+        run: xcrun simctl list devices available
+      - name: Build app and keyboard
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing \
+            -project mowa.xcodeproj \
+            -scheme mowa \
+            -destination "platform=iOS Simulator,name=$SIMULATOR_NAME,OS=$SIMULATOR_OS" \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
+            SWIFT_VERSION=6 \
+            SWIFT_STRICT_CONCURRENCY=complete \
+            | xcbeautify --renderer github-actions
+
+  test:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: Cache DerivedData and SPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData
+            ~/Library/Caches/org.swift.swiftpm
+            Packages/*/.build
+            Tools/*/.build
+          key: test-${{ runner.os }}-${{ hashFiles('**/Package.swift', '**/Package.resolved') }}
+          restore-keys: test-${{ runner.os }}-
+      - name: List simulators
+        run: xcrun simctl list devices available
+      - name: Test logic packages with swift test
+        run: |
+          for package in Packages/* Tools/*; do
+            swift test --package-path "$package" --enable-code-coverage
+          done
+      - name: Test packages on the simulator
+        run: |
+          set -o pipefail
+          mkdir -p build
+          for package in Packages/*; do
+            name="$(basename "$package")"
+            (cd "$package" && xcodebuild test \
+              -scheme "$name-Package" \
+              -destination "platform=iOS Simulator,name=$SIMULATOR_NAME,OS=$SIMULATOR_OS" \
+              -enableCodeCoverage YES \
+              -resultBundlePath "$GITHUB_WORKSPACE/build/$name.xcresult" \
+              SWIFT_TREAT_WARNINGS_AS_ERRORS=YES) | xcbeautify --renderer github-actions
+          done
+      - name: Test CrapGate on macOS
+        run: |
+          set -o pipefail
+          (cd Tools/CrapGate && xcodebuild test \
+            -scheme CrapGate-Package \
+            -destination "platform=macOS" \
+            -enableCodeCoverage YES \
+            -resultBundlePath "$GITHUB_WORKSPACE/build/CrapGate.xcresult" \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES) | xcbeautify --renderer github-actions
+      - name: Show xccov report fields
+        run: xcrun xccov view --report --json build/MowaCore.xcresult | head -c 2000
+      - name: Upload result bundles
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult
+          path: build/*.xcresult
+          if-no-files-found: error
+
+  crap:
+    needs: test
+    if: ${{ !cancelled() }}
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s "$XCODE_APP"
+      - name: Install lizard ${{ env.LIZARD_VERSION }}
+        run: python3 -m pip install --break-system-packages "lizard==$LIZARD_VERSION"
+      - name: Download result bundles
+        uses: actions/download-artifact@v4
+        with:
+          name: xcresult
+          path: build
+      - name: Test scripts/crap.sh
+        run: scripts/tests/crap_test.sh
+      - name: CRAP gate
+        run: scripts/crap.sh build/*.xcresult
