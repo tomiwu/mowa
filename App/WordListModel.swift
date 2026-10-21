@@ -20,8 +20,9 @@ final class WordListModel {
         return outcome
     }
 
-    func edit(at index: Int, to word: String) -> WordList.Outcome {
-        let outcome = list.edit(at: index, to: word)
+    @discardableResult
+    func submit(_ word: String, editing index: Int?) -> WordList.Outcome {
+        let outcome = list.submit(word, editing: index)
         save()
         return outcome
     }

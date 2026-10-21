@@ -22,6 +22,18 @@ struct WordListTests {
         #expect(list.words == ["Zbigniew"])
     }
 
+    @Test func submitEditsWhenIndexIsGiven() {
+        var list = WordList(words: ["Anna"])
+        #expect(list.submit("Ola", editing: 0) == .added)
+        #expect(list.words == ["Ola"])
+    }
+
+    @Test func submitAddsWhenThereIsNoIndex() {
+        var list = WordList(words: ["Anna"])
+        #expect(list.submit("Ola", editing: nil) == .added)
+        #expect(list.words == ["Anna", "Ola"])
+    }
+
     @Test func editReplacesWord() {
         var list = WordList(words: ["a", "b"])
         #expect(list.edit(at: 1, to: " c ") == .added)

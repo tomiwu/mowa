@@ -35,6 +35,12 @@ public struct WordList: Equatable, Sendable {
         return outcome
     }
 
+    /// Edits the word at an index, or adds the word when there is no index.
+    @discardableResult
+    public mutating func submit(_ word: String, editing index: Int?) -> Outcome {
+        index.map { edit(at: $0, to: word) } ?? add(word)
+    }
+
     /// Removes the words at the indexes. Indexes out of range are ignored.
     public mutating func delete(at indexes: some Sequence<Int>) {
         let removed = Set(indexes)

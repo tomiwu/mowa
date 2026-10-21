@@ -35,7 +35,7 @@ struct WordListView: View {
     }
 
     private func commit() {
-        _ = editing.map { model.edit(at: $0, to: draft) } ?? model.add(draft)
+        model.submit(draft, editing: editing)
         editing = nil
         draft = ""
     }
