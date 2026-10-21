@@ -107,3 +107,14 @@ Two targets need profiles: the app (`com.tomiwu.mowa`) and the keyboard extensio
 - Choose the CI simulator device name after the first run.
 - Verify the exact `xccov` JSON field names in the first CI run before the `crap` job is required.
 - CocoaPods read-only date: confirm the date on blog.cocoapods.org before the PR.
+
+## Sandcastle lanes
+
+The Sandcastle loop (`.sandcastle/main.mts`) runs 2 lanes at the same time. Each lane works on 1 issue in its own git worktree and branch, and writes its own log `.sandcastle/logs/lane-<name>.log`.
+
+- Lane `app`: all issues that change the app, the Xcode project, the shared storage or the keyboard. Only 1 such issue runs at a time.
+- Lane `side`: spikes and script issues. An issue is in this lane when its title starts with `Spike:` or it has the label `lane: side`.
+
+To move an issue to the other lane, add or remove the label `lane: side`. Set `LANES=app` to run only one lane.
+
+The merge is serialized. One lane at a time rebases its PR on the latest `main`, waits for green CI of the new head SHA, and merges with `--match-head-commit`. The loop waits up to 30 minutes for a CI run to start, because macOS runners are often queued. A queued run counts as pending, not as a failure. After the merge, the loop removes its own worktree with `git worktree remove --force`.
