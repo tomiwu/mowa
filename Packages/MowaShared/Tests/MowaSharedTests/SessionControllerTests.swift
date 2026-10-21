@@ -119,7 +119,7 @@ struct SessionControllerTests {
     }
 
     @Test func recorderFailureLeavesNoSession() throws {
-        let failing = try SessionControllerTests(failure: .permissionDenied)
+        let failing = try Self(failure: .permissionDenied)
         failing.controller.start()
         #expect(failing.controller.status == .noSession)
         #expect(try failing.store.readSessionStatus() == .noSession)

@@ -25,10 +25,8 @@ nonisolated final class AudioEngineRecorder: AudioRecorder, @unchecked Sendable 
         try session.setCategory(.playAndRecord, mode: .default, options: [.mixWithOthers])
         try session.setActive(true)
         let input = engine.inputNode
-        input.installTap(onBus: 0, bufferSize: 4096, format: input.outputFormat(forBus: 0)) {
-            _,
-            _ in
-        }
+        let format = input.outputFormat(forBus: 0)
+        input.installTap(onBus: 0, bufferSize: 4096, format: format) { _, _ in }
         try engine.start()
     }
 }
