@@ -8,11 +8,15 @@
     /// loads the model on the first call. It never uses the network: the model manager
     /// downloads the model before.
     public actor ParakeetEngine: TranscriptionEngine {
-        private let store: ParakeetModelStore
-        private var manager: AsrManager?
+        private let loader: LoadOnce<AsrManager>
 
         public init(store: ParakeetModelStore) {
-            self.store = store
+            loader = LoadOnce(isReady: { store.isInstalled }) {
+                let models = try await AsrModels.load(from: store.directory, version: .v3)
+                let manager = AsrManager()
+                try await manager.loadModels(models)
+                return manager
+            }
         }
 
         public func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {
@@ -31,16 +35,7 @@
         }
 
         private func loadedManager() async throws(TranscriptionError) -> AsrManager {
-            if let manager { return manager }
-            guard store.isInstalled else { throw .modelNotInstalled }
-            let loaded = try await mapTranscriptionFailure(to: .modelLoadFailed) { [store] in
-                let models = try await AsrModels.load(from: store.directory, version: .v3)
-                let manager = AsrManager()
-                try await manager.loadModels(models)
-                return manager
-            }
-            manager = loaded
-            return loaded
+            try await loader.get()
         }
     }
 #endif

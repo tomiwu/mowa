@@ -18,19 +18,9 @@
         }
 
         public func download() -> AsyncThrowingStream<Double, any Error> {
-            let (stream, continuation) = AsyncThrowingStream<Double, any Error>.makeStream()
-            let task = Task {
-                do {
-                    _ = try await AsrModels.download(version: .v3) {
-                        continuation.yield($0.fractionCompleted)
-                    }
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
-                }
+            progressStream { report in
+                _ = try await AsrModels.download(version: .v3) { report($0.fractionCompleted) }
             }
-            continuation.onTermination = { _ in task.cancel() }
-            return stream
         }
 
         public func delete() throws(ModelStoreError) {
