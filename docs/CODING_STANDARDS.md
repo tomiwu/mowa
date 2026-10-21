@@ -73,7 +73,7 @@ In each `Package.swift` target and in the Xcode project build settings:
 | `SWIFT_DEFAULT_ACTOR_ISOLATION` | `MainActor` (app and keyboard UI targets only) | Xcode 26 default for new apps; logic packages stay `nonisolated` |
 | `ENABLE_USER_SCRIPT_SANDBOXING` | `YES` | build scripts cannot touch files they do not declare |
 
-Package targets: `swiftSettings: [.enableUpcomingFeature("ExistentialAny"), .enableUpcomingFeature("InternalImportsByDefault"), .enableUpcomingFeature("MemberImportVisibility"), .treatAllWarnings(as: .error)]` (`treatAllWarnings` needs swift-tools-version 6.2 or later).
+Package targets: `swiftSettings: [.enableUpcomingFeature("ExistentialAny"), .enableUpcomingFeature("InternalImportsByDefault"), .enableUpcomingFeature("MemberImportVisibility")]`. Do not set `treatAllWarnings` in the app packages: Xcode builds local packages with `-suppress-warnings`, which conflicts with it. CI runs `swift test -Xswiftc -warnings-as-errors` for each package instead (`Tools/CrapGate` is a root package and keeps `treatAllWarnings`).
 Note: the newest Swift release is 6.4.1 (2026-10-15). Use the Swift that comes with the newest stable Xcode on the CI runner, not a separate toolchain.
 
 ### 4.2 SwiftLint
