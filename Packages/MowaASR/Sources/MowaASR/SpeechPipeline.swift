@@ -20,11 +20,16 @@ public actor SpeechPipeline {
         onSegment: @Sendable (SpeechSegment) async -> Void
     ) async throws(SpeechPipelineError) {
         for await samples in input {
-            for segment in try await feed(samples) {
-                await onSegment(segment)
-            }
+            await deliver(try await feed(samples), to: onSegment)
         }
-        for segment in try await finish() {
+        await deliver(try await finish(), to: onSegment)
+    }
+
+    private func deliver(
+        _ segments: [SpeechSegment],
+        to onSegment: @Sendable (SpeechSegment) async -> Void
+    ) async {
+        for segment in segments {
             await onSegment(segment)
         }
     }
