@@ -18,6 +18,13 @@ struct SharedStoreTests {
         createdAt: Date(timeIntervalSince1970: 1_000)
     )
 
+    @Test func storeUsesFallbackWithoutContainer() throws {
+        let (_, directory) = try makeStore()
+        let store = SharedStore(container: nil, fallback: directory)
+        try store.writeSessionStatus(.recording)
+        #expect(try SharedStore(directory: directory).readSessionStatus() == .recording)
+    }
+
     @Test func resultRoundTrips() throws {
         let (store, _) = try makeStore()
         try store.writeResult(sample)
