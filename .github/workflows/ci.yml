@@ -105,7 +105,7 @@ jobs:
           for package in Packages/*; do
             name="$(basename "$package")"
             (cd "$package" && xcodebuild test \
-              -scheme "$name-Package" \
+              -scheme "$name" \
               -destination "platform=iOS Simulator,name=$SIMULATOR_NAME,OS=$SIMULATOR_OS" \
               -enableCodeCoverage YES \
               -resultBundlePath "$GITHUB_WORKSPACE/build/$name.xcresult" \
