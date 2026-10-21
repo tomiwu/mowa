@@ -21,14 +21,29 @@ nonisolated final class SampleConverter: @unchecked Sendable {
         let ratio = format.sampleRate / buffer.format.sampleRate
         let capacity = AVAudioFrameCount(Double(buffer.frameLength) * ratio) + 1
         let result = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: capacity)
-        var supplied = false
+        let input = Input(buffer)
         var error: NSError?
         converter?.convert(to: result ?? buffer, error: &error) { _, status in
-            status.pointee = supplied ? .noDataNow : .haveData
-            supplied = true
-            return buffer
+            input.next(status)
         }
         return result
+    }
+
+    /// Hands the input buffer to the converter once. The converter calls it on one thread.
+    private final class Input: @unchecked Sendable {
+        private let buffer: AVAudioPCMBuffer
+        private var supplied = false
+
+        init(_ buffer: AVAudioPCMBuffer) {
+            self.buffer = buffer
+        }
+
+        func next(_ status: UnsafeMutablePointer<AVAudioConverterInputStatus>) -> AVAudioBuffer? {
+            status.pointee = supplied ? .noDataNow : .haveData
+            let result = supplied ? nil : buffer
+            supplied = true
+            return result
+        }
     }
 
     private static func floats(from buffer: AVAudioPCMBuffer) -> [Float]? {
