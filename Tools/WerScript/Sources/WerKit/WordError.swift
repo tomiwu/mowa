@@ -10,8 +10,8 @@ public enum WordError {
     /// The number of substitutions, deletions and insertions between two word lists.
     public static func editDistance(_ reference: [String], _ hypothesis: [String]) -> Int {
         var row = Array(0...hypothesis.count)
-        for (i, refWord) in reference.enumerated() {
-            row = nextRow(row, firstCell: i + 1, refWord: refWord, hypothesis: hypothesis)
+        for (index, refWord) in reference.enumerated() {
+            row = nextRow(row, firstCell: index + 1, refWord: refWord, hypothesis: hypothesis)
         }
         return row[hypothesis.count]
     }
@@ -27,9 +27,9 @@ public enum WordError {
         hypothesis: [String]
     ) -> [Int] {
         var row = [firstCell]
-        for (j, hypWord) in hypothesis.enumerated() {
-            let substitution = previous[j] + (refWord == hypWord ? 0 : 1)
-            row.append(min(substitution, previous[j + 1] + 1, row[j] + 1))
+        for (column, hypWord) in hypothesis.enumerated() {
+            let substitution = previous[column] + (refWord == hypWord ? 0 : 1)
+            row.append(min(substitution, previous[column + 1] + 1, row[column] + 1))
         }
         return row
     }

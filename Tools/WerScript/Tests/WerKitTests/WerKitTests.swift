@@ -98,13 +98,13 @@ struct WerReportTests {
             )
         )
         #expect(text.contains("Polish target (<= 9%): NOT met"))
-        let ok = WerReport.format(
+        let met = WerReport.format(
             try WerReport.score(
                 sentences: [Sentence(id: "p", group: .polish, reference: "a b c d e f g h i j k")],
                 hypotheses: ["p": "a b c d e f g h i j k"]
             )
         )
-        #expect(ok.contains("Polish target (<= 9%): met"))
+        #expect(met.contains("Polish target (<= 9%): met"))
     }
 
     @Test func roundsToTwoDecimals() {
@@ -114,7 +114,13 @@ struct WerReportTests {
 }
 
 struct WerMainTests {
-    private func run(_ args: [String], files: [String: String]) -> (Int32, String, String) {
+    private struct Outcome {
+        let code: Int32
+        let out: String
+        let err: String
+    }
+
+    private func run(_ args: [String], files: [String: String]) -> Outcome {
         var out = ""
         var err = ""
         let code = WerMain.run(
@@ -126,21 +132,21 @@ struct WerMainTests {
             write: { out += $0 },
             writeError: { err += $0 }
         )
-        return (code, out, err)
+        return Outcome(code: code, out: out, err: err)
     }
 
     @Test func printsReport() {
-        let (code, out, _) = run(
+        let result = run(
             ["s", "h"],
             files: ["s": "a\tpolish\tx y\n", "h": "a\tx y\n"]
         )
-        #expect(code == 0)
-        #expect(out.contains("polish: WER 0.00%"))
+        #expect(result.code == 0)
+        #expect(result.out.contains("polish: WER 0.00%"))
     }
 
     @Test func wrongArgumentCountFails() {
-        let (code, _, err) = run([], files: [:])
-        #expect(code == 2)
-        #expect(err.contains("usage"))
+        let result = run([], files: [:])
+        #expect(result.code == 2)
+        #expect(result.err.contains("usage"))
     }
 }
