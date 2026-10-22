@@ -26,11 +26,15 @@ private struct FixedEngine: ReleasableEngine {
     }
 }
 
-private final class Choice: @unchecked Sendable {
-    // The tests change it between the calls.
-    var value: ModelChoice
+private final class Choice: Sendable {
+    private let store: Mutex<ModelChoice>
 
-    init(_ value: ModelChoice) { self.value = value }
+    init(_ value: ModelChoice) { store = Mutex(value) }
+
+    var value: ModelChoice {
+        get { store.withLock { $0 } }
+        set { store.withLock { $0 = newValue } }
+    }
 }
 
 private func makers(_ journal: Journal, whisper: Bool = true)
