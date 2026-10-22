@@ -112,6 +112,33 @@ struct SwitchingEngineTests {
         }
         #expect(!journal.events.contains("release p"))
     }
+
+    @Test func releaseModelReleasesTheCurrentEngine() async throws {
+        let journal = Journal()
+        let engine = SwitchingEngine(choice: { .parakeet }, makers: makers(journal))
+        _ = try await engine.transcribe([])
+        await engine.releaseModel()
+        _ = try await engine.transcribe([])
+        let events = journal.events.filter { !$0.hasPrefix("make") }
+        #expect(events == ["transcribe p", "release p", "transcribe p"])
+    }
+
+    @Test func releaseModelDoesNothingBeforeTheFirstUtterance() async {
+        let journal = Journal()
+        let engine = SwitchingEngine(choice: { .parakeet }, makers: makers(journal))
+        await engine.releaseModel()
+        #expect(journal.events.isEmpty)
+    }
+
+    @Test func conditionalReleaseFollowsTheCondition() async throws {
+        let journal = Journal()
+        let engine = SwitchingEngine(choice: { .parakeet }, makers: makers(journal))
+        _ = try await engine.transcribe([])
+        await engine.releaseModel(when: false)
+        #expect(!journal.events.contains("release p"))
+        await engine.releaseModel(when: true)
+        #expect(journal.events.contains("release p"))
+    }
 }
 
 @Suite("Switching engine log")

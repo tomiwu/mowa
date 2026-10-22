@@ -9,6 +9,19 @@ enum AppSession {
         suiteName: MowaShared.appGroupIdentifier
     )
 
+    nonisolated static let engine = SwitchingEngine(
+        choice: { Self.modelChoiceStorage.choice },
+        makers: [
+            .parakeet: { ParakeetEngine(store: ParakeetModelStore(), log: PhaseLog.system()) },
+            .whisper: { WhisperEngine(store: WhisperModelStore(), log: PhaseLog.system()) },
+        ],
+        log: PhaseLog.system()
+    )
+
+    nonisolated static func releaseModel(when condition: Bool = true) {
+        Task { await engine.releaseModel(when: condition) }
+    }
+
     @MainActor
     static func makeManagers() -> [ModelChoice: ModelManager] {
         [
@@ -23,14 +36,7 @@ enum AppSession {
         let notifier = DarwinNotifier(transport: SystemNotificationTransport())
         let log = PhaseLog.system()
         let relay = DictationRelay(
-            engine: SwitchingEngine(
-                choice: { Self.modelChoiceStorage.choice },
-                makers: [
-                    .parakeet: { ParakeetEngine(store: ParakeetModelStore(), log: log) },
-                    .whisper: { WhisperEngine(store: WhisperModelStore(), log: log) },
-                ],
-                log: log
-            ),
+            engine: engine,
             store: store,
             notifier: notifier,
             history: { entry in await history.record(entry) }

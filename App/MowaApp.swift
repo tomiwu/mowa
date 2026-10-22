@@ -46,6 +46,14 @@ struct MowaApp: App {
             }
             .onOpenURL { session.handle(url: $0) }
             .onChange(of: scenePhase, initial: true) { onboarding.refresh() }
+            .onChange(of: scenePhase) { _, phase in
+                AppSession.releaseModel(when: phase == .background)
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: UIApplication.didReceiveMemoryWarningNotification
+                )
+            ) { _ in AppSession.releaseModel() }
             .task { await session.observeStopRequests() }
         }
     }
