@@ -3,6 +3,9 @@ struct ChunkBuffer: Sendable {
     private let chunkSize: Int
     private var pending: [Float] = []
 
+    /// Samples that wait for the next full chunk. Always less than one chunk.
+    var pendingCount: Int { pending.count }
+
     init(chunkSize: Int) {
         self.chunkSize = chunkSize
     }

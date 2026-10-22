@@ -1,13 +1,15 @@
 /// Cuts a stream of audio chunks into utterances with the speech probability of each chunk.
 ///
 /// An utterance starts when the probability reaches the start threshold. It ends after enough
-/// silent chunks in a row, or when `finish` is called (the user released the mic).
+/// silent chunks in a row, when it reaches `maxChunks`, or when `finish` is called (the user
+/// released the mic).
 public struct SpeechSegmenter: Sendable {
     private let config: SegmenterConfig
     private var preroll: [[Float]] = []
     private var audio: [Float] = []
     private var inSpeech = false
     private var silentChunks = 0
+    private var audioChunks = 0
 
     public init(config: SegmenterConfig = .standard) {
         self.config = config
@@ -30,14 +32,17 @@ public struct SpeechSegmenter: Sendable {
         }
         inSpeech = true
         audio = preroll.flatMap { $0 } + chunk
+        audioChunks = preroll.count + 1
         preroll = []
         return nil
     }
 
     private mutating func continueSpeech(_ chunk: [Float], _ probability: Float) -> SpeechSegment? {
         audio += chunk
+        audioChunks += 1
         silentChunks = probability < config.endThreshold ? silentChunks + 1 : 0
-        return silentChunks >= config.minSilenceChunks ? close() : nil
+        let ended = silentChunks >= config.minSilenceChunks || audioChunks >= config.maxChunks
+        return ended ? close() : nil
     }
 
     private mutating func close() -> SpeechSegment {
@@ -45,6 +50,7 @@ public struct SpeechSegmenter: Sendable {
         audio = []
         inSpeech = false
         silentChunks = 0
+        audioChunks = 0
         return segment
     }
 }
