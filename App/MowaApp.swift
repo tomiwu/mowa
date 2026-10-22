@@ -31,10 +31,6 @@ struct MowaApp: App {
         _session = State(initialValue: AppSession.makeController(history: history))
     }
 
-    private func releaseModel(in phase: ScenePhase) {
-        if phase == .background { AppSession.releaseModel() }
-    }
-
     var body: some Scene {
         WindowGroup {
             NavigationStack {
@@ -50,7 +46,9 @@ struct MowaApp: App {
             }
             .onOpenURL { session.handle(url: $0) }
             .onChange(of: scenePhase, initial: true) { onboarding.refresh() }
-            .onChange(of: scenePhase) { _, phase in releaseModel(in: phase) }
+            .onChange(of: scenePhase) { _, phase in
+                AppSession.releaseModel(when: phase == .background)
+            }
             .onReceive(
                 NotificationCenter.default.publisher(
                     for: UIApplication.didReceiveMemoryWarningNotification

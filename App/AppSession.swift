@@ -18,8 +18,8 @@ enum AppSession {
         log: PhaseLog.system()
     )
 
-    nonisolated static func releaseModel() {
-        Task { await engine.releaseModel() }
+    nonisolated static func releaseModel(when condition: Bool = true) {
+        Task { await engine.releaseModel(when: condition) }
     }
 
     @MainActor

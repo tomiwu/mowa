@@ -41,6 +41,11 @@ public actor SwitchingEngine: TranscriptionEngine {
         await current?.engine.release()
     }
 
+    /// Frees the model only when `condition` is true, for example when the app goes to the background.
+    public func releaseModel(when condition: Bool) async {
+        if condition { await releaseModel() }
+    }
+
     private func engine(for model: ModelChoice) async throws(TranscriptionError)
         -> any ReleasableEngine
     {
