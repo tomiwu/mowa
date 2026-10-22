@@ -17,10 +17,15 @@
 
         public func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {
             let kit = try await loadedKit()
-            let results = try await mapTranscriptionFailure(to: .transcriptionFailed) {
-                try await kit.transcribe(audioArray: samples, decodeOptions: Self.options)
+            do {
+                let results = try await kit.transcribe(
+                    audioArray: samples,
+                    decodeOptions: Self.options
+                )
+                return Transcript(text: Self.joinedText(of: results.map(\.text)))
+            } catch {
+                throw .transcriptionFailed
             }
-            return Transcript(text: Self.joinedText(of: results.map(\.text)))
         }
 
         static func joinedText(of parts: [String]) -> String {
