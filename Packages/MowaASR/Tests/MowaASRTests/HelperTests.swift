@@ -14,6 +14,14 @@ private actor Counter {
 }
 
 @Suite struct LoadOnceTests {
+    @Test func loadsAgainAfterReset() async throws {
+        let counter = Counter()
+        let loader = LoadOnce<Int>(isReady: { true }, load: { await counter.next() })
+        _ = try await loader.get()
+        await loader.reset()
+        #expect(try await loader.get() == 2)
+    }
+
     @Test func missingFilesGiveNotInstalled() async {
         let loader = LoadOnce<Int>(isReady: { false }, load: { 1 })
         await #expect(throws: TranscriptionError.modelNotInstalled) { try await loader.get() }

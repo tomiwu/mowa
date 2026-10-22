@@ -7,7 +7,7 @@
     /// The model has automatic language ID, so one engine serves Polish and English. The engine
     /// loads the model on the first call. It never uses the network: the model manager
     /// downloads the model before.
-    public actor ParakeetEngine: TranscriptionEngine {
+    public actor ParakeetEngine: ReleasableEngine {
         private let loader: LoadOnce<AsrManager>
 
         public init(store: ParakeetModelStore, log: PhaseLog = .silent) {
@@ -22,6 +22,10 @@
                     }
                 }
             )
+        }
+
+        public func release() async {
+            await loader.reset()
         }
 
         public func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {
