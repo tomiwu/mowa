@@ -16,7 +16,7 @@ public struct PhaseLog: Sendable {
     }
 
     /// A log that writes nothing.
-    public static let silent = PhaseLog(write: { _ in }, availableBytes: { 0 })
+    public static let silent = Self(write: { _ in }, availableBytes: { 0 })
 
     private let write: @Sendable (String) -> Void
     private let availableBytes: @Sendable () -> UInt64
@@ -55,9 +55,9 @@ public struct PhaseLog: Sendable {
 #if canImport(os)
     extension PhaseLog {
         /// A log that writes to the unified log and reads `os_proc_available_memory`.
-        public static func system() -> PhaseLog {
+        public static func system() -> Self {
             let logger = Logger(subsystem: "com.tomiwu.mowa", category: "dictation")
-            return PhaseLog(
+            return Self(
                 write: { logger.notice("\($0, privacy: .public)") },
                 availableBytes: { UInt64(os_proc_available_memory()) }
             )

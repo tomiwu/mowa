@@ -40,10 +40,11 @@ enum AppSession {
             notifier: notifier,
             recorder: AudioEngineRecorder(
                 log: log,
-                model: { Self.modelChoiceStorage.choice }
-            ) { stream in
-                Task { await SpeechCapture.run(stream, relay: relay) }
-            },
+                model: { Self.modelChoiceStorage.choice },
+                onStream: { stream in
+                    Task { await SpeechCapture.run(stream, relay: relay) }
+                }
+            ),
             sleep: { try await Task.sleep(for: $0) }
         )
     }
