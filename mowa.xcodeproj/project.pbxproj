@@ -18,6 +18,8 @@
 		000000000000000000A00063 = {isa = PBXBuildFile; fileRef = 000000000000000000A00062; };
 		000000000000000000A00065 = {isa = PBXBuildFile; fileRef = 000000000000000000A00064; };
 		000000000000000000A00053 = {isa = PBXBuildFile; fileRef = 000000000000000000A00052; };
+		000000000000000000A00071 = {isa = PBXBuildFile; fileRef = 000000000000000000A00070; };
+		000000000000000000A00073 = {isa = PBXBuildFile; fileRef = 000000000000000000A00072; };
 		000000000000000000A00047 = {isa = PBXBuildFile; fileRef = 000000000000000000A00046; };
 		000000000000000000A00049 = {isa = PBXBuildFile; fileRef = 000000000000000000A00048; };
 		000000000000000000A0004B = {isa = PBXBuildFile; fileRef = 000000000000000000A0004A; };
@@ -66,6 +68,8 @@
 		000000000000000000A00062 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
 		000000000000000000A00052 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListView.swift; sourceTree = "<group>"; };
 		000000000000000000A00064 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LicensesView.swift; sourceTree = "<group>"; };
+		000000000000000000A00070 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanUpModel.swift; sourceTree = "<group>"; };
+		000000000000000000A00072 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanUpView.swift; sourceTree = "<group>"; };
 		000000000000000000A00046 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelView.swift; sourceTree = "<group>"; };
 		000000000000000000A00030 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardView.swift; sourceTree = "<group>"; };
 		000000000000000000A00004 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
@@ -117,6 +121,8 @@
 				000000000000000000A00050,
 				000000000000000000A00052,
 				000000000000000000A00064,
+				000000000000000000A00070,
+				000000000000000000A00072,
 				000000000000000000A00062,
 				000000000000000000A00060,
 				000000000000000000A00048,
@@ -258,6 +264,8 @@
 				000000000000000000A00051,
 				000000000000000000A00053,
 				000000000000000000A00065,
+				000000000000000000A00071,
+				000000000000000000A00073,
 				000000000000000000A00063,
 				000000000000000000A00061,
 				000000000000000000A00049,

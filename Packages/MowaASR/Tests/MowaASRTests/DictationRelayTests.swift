@@ -74,6 +74,26 @@ struct DictationRelayTests {
         #expect(entries.all.first?.text == "jade do Wrocław")
     }
 
+    @Test func cleanUpIsOffByDefaultAndTextStaysTheSame() async throws {
+        let relay = try relay(.success(Transcript(text: "tak yyy dobrze")))
+        await relay.handle(SpeechSegment(samples: [0.1]))
+        #expect(stored?.text == "tak yyy dobrze")
+    }
+
+    @Test func cleanUpRunsWhenTheSettingIsOn() async throws {
+        let relay = try relay(.success(Transcript(text: "tak yyy dobrze")))
+        try SharedStore(directory: directory).setCleanUp(enabled: true)
+        await relay.handle(SpeechSegment(samples: [0.1]))
+        #expect(stored?.text == "tak dobrze")
+    }
+
+    @Test func textThatCleanUpEmptiesSendsNothing() async throws {
+        let relay = try relay(.success(Transcript(text: "yyy")))
+        try SharedStore(directory: directory).setCleanUp(enabled: true)
+        await relay.handle(SpeechSegment(samples: [0.1]))
+        #expect(stored == nil)
+    }
+
     @Test func storesTextAndNotifiesKeyboard() async throws {
         let relay = try relay(.success(Transcript(text: "Dzień dobry")))
         await relay.handle(SpeechSegment(samples: [0.1]))

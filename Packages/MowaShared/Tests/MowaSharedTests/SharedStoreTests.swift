@@ -71,6 +71,19 @@ struct SharedStoreTests {
         #expect(try store.readSettings() == .standard)
     }
 
+    @Test func cleanUpIsOffByDefault() throws {
+        let (store, _) = try makeStore()
+        #expect(!store.isCleanUpEnabled)
+    }
+
+    @Test func cleanUpToggleIsSavedAndKeepsOtherSettings() throws {
+        let (store, _) = try makeStore()
+        try store.writeSettings(SharedSettings(languageCode: "pl", cleanUpEnabled: false))
+        try store.setCleanUp(enabled: true)
+        #expect(store.isCleanUpEnabled)
+        #expect(try store.readSettings().languageCode == "pl")
+    }
+
     @Test func sessionStatusRoundTrips() throws {
         let (store, _) = try makeStore()
         try store.writeSessionStatus(.recording)
