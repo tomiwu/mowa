@@ -8,24 +8,31 @@
     /// Whisper detects the language of each utterance. The engine loads the model on the first
     /// call. It never uses the network: the model manager downloads the model before.
     public actor WhisperEngine: TranscriptionEngine {
-        private let store: WhisperModelStore
-        private var kit: WhisperKit?
+        private let loader: LoadOnce<WhisperKit>
 
         public init(store: WhisperModelStore) {
-            self.store = store
+            loader = LoadOnce(
+                isReady: { store.isInstalled },
+                load: {
+                    try await WhisperKit(
+                        WhisperKitConfig(
+                            modelFolder: store.directory.path,
+                            verbose: false,
+                            load: true,
+                            download: false
+                        )
+                    )
+                }
+            )
         }
 
         public func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {
-            let kit = try await loadedKit()
-            do {
-                let results = try await kit.transcribe(
-                    audioArray: samples,
-                    decodeOptions: Self.options
-                )
-                return Transcript(text: Self.joinedText(of: results.map(\.text)))
-            } catch {
-                throw .transcriptionFailed
+            let kit = try await loader.get()
+            let parts = try await mapTranscriptionFailure(to: .transcriptionFailed) {
+                try await kit.transcribe(audioArray: samples, decodeOptions: Self.options)
+                    .map(\.text)
             }
+            return Transcript(text: Self.joinedText(of: parts))
         }
 
         static func joinedText(of parts: [String]) -> String {
@@ -37,21 +44,5 @@
             usePrefillPrompt: true,
             detectLanguage: true
         )
-
-        private func loadedKit() async throws(TranscriptionError) -> WhisperKit {
-            if let kit { return kit }
-            guard store.isInstalled else { throw .modelNotInstalled }
-            let config = WhisperKitConfig(
-                modelFolder: store.directory.path,
-                verbose: false,
-                load: true,
-                download: false
-            )
-            let loaded = try await mapTranscriptionFailure(to: .modelLoadFailed) {
-                try await WhisperKit(config)
-            }
-            kit = loaded
-            return loaded
-        }
     }
 #endif
