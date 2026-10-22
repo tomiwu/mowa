@@ -42,6 +42,38 @@ private actor Counter {
     }
 }
 
+@Suite struct LoadOnceConcurrencyTests {
+    @Test func concurrentGetsShareOneLoad() async throws {
+        let counter = Counter()
+        let loader = LoadOnce<Int>(
+            isReady: { true },
+            load: {
+                let value = await counter.next()
+                try await Task.sleep(for: .milliseconds(100))
+                return value
+            }
+        )
+        async let first = loader.get()
+        async let second = loader.get()
+        let results = try await [first, second]
+        #expect(results == [1, 1])
+        #expect(await counter.calls == 1)
+    }
+
+    @Test func failedLoadCanBeTriedAgain() async throws {
+        let counter = Counter()
+        let loader = LoadOnce<Int>(
+            isReady: { true },
+            load: {
+                if await counter.next() == 1 { throw LoadError() }
+                return 2
+            }
+        )
+        await #expect(throws: TranscriptionError.modelLoadFailed) { try await loader.get() }
+        #expect(try await loader.get() == 2)
+    }
+}
+
 @Suite struct LoadOnceMemoryTests {
     private func loader(available: UInt64, _ counter: Counter) -> LoadOnce<Int> {
         LoadOnce<Int>(
