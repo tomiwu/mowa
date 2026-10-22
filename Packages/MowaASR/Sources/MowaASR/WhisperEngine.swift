@@ -13,6 +13,7 @@
         public init(store: WhisperModelStore, log: PhaseLog = .silent) {
             loader = LoadOnce(
                 isReady: { store.isInstalled },
+                availableBytes: MemoryBudget.systemAvailableBytes,
                 load: {
                     try await log.around(.modelLoadStart, .modelLoadEnd, model: .whisper) {
                         try await WhisperRuntime.open(folder: store.directory.path)

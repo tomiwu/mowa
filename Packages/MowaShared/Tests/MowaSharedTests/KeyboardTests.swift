@@ -51,8 +51,8 @@ struct KeyboardTests {
     }
 
     @Test func statusLabelsAreForTheUser() {
-        let labels = [SessionStatus.recording, .processing, .noSession].map(\.label)
-        #expect(labels == ["recording", "processing", "no session"])
+        let labels = [SessionStatus.recording, .processing, .noSession, .lowMemory].map(\.label)
+        #expect(labels == ["recording", "processing", "no session", "not enough memory"])
     }
 
     @Test func startURLUsesScheme() {

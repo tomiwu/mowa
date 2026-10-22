@@ -42,6 +42,32 @@ private actor Counter {
     }
 }
 
+@Suite struct LoadOnceMemoryTests {
+    private func loader(available: UInt64, _ counter: Counter) -> LoadOnce<Int> {
+        LoadOnce<Int>(
+            isReady: { true },
+            availableBytes: { available },
+            budget: MemoryBudget(minimumBytes: 100),
+            load: { await counter.next() }
+        )
+    }
+
+    @Test func lowMemoryDoesNotCallLoad() async {
+        let counter = Counter()
+        let loader = loader(available: 99, counter)
+        await #expect(throws: TranscriptionError.notEnoughMemory) { try await loader.get() }
+        #expect(await counter.count == 0)
+    }
+
+    @Test func enoughMemoryCallsLoadOnce() async throws {
+        let counter = Counter()
+        let loader = loader(available: 100, counter)
+        _ = try await loader.get()
+        _ = try await loader.get()
+        #expect(await counter.count == 1)
+    }
+}
+
 @Suite struct ProgressStreamTests {
     @Test func yieldsValuesThenEnds() async throws {
         let stream = progressStream { report in

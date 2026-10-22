@@ -94,6 +94,28 @@ struct DictationRelayTests {
         #expect(stored == nil)
     }
 
+    @Test func lowMemoryShowsInTheSessionStatus() async throws {
+        let relay = try relay(.failure(.notEnoughMemory))
+        await relay.handle(SpeechSegment(samples: [0.1]))
+        #expect(try SharedStore(directory: directory).readSessionStatus() == .lowMemory)
+        #expect(transport.posts.withLock { $0 } == 1)
+        #expect(stored == nil)
+    }
+
+    @Test func otherFailuresKeepTheSessionStatus() async throws {
+        let relay = try relay(.failure(.modelLoadFailed))
+        await relay.handle(SpeechSegment(samples: [0.1]))
+        #expect(try SharedStore(directory: directory).readSessionStatus() == .noSession)
+        #expect(transport.posts.withLock { $0 } == 0)
+    }
+
+    @Test func aWorkingTranscriptionClearsTheLowMemoryStatus() async throws {
+        let relay = try relay(.success(Transcript(text: "tak")))
+        try SharedStore(directory: directory).writeSessionStatus(.lowMemory)
+        await relay.handle(SpeechSegment(samples: [0.1]))
+        #expect(try SharedStore(directory: directory).readSessionStatus() == .recording)
+    }
+
     @Test func storesTextAndNotifiesKeyboard() async throws {
         let relay = try relay(.success(Transcript(text: "Dzień dobry")))
         await relay.handle(SpeechSegment(samples: [0.1]))
