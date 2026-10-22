@@ -31,9 +31,9 @@ struct PhaseLogTests {
         #expect(lines.values == ["record-start model=whisper available-bytes=7"])
     }
 
-    @Test func aroundWritesStartThenEnd() async throws {
+    @Test func aroundWritesStartThenEnd() async {
         let lines = Lines()
-        let value = try await makeLog(lines).around(
+        let value = await makeLog(lines).around(
             .transcriptionStart,
             .transcriptionEnd,
             model: .parakeet
