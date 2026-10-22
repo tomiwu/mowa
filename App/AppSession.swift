@@ -5,7 +5,9 @@ import MowaShared
 
 /// Builds the session controller with the App Group store and the microphone.
 enum AppSession {
-    nonisolated static let modelChoiceStorage = ModelChoiceStorage(suiteName: MowaShared.appGroupIdentifier)
+    nonisolated static let modelChoiceStorage = ModelChoiceStorage(
+        suiteName: MowaShared.appGroupIdentifier
+    )
 
     @MainActor
     static func makeManagers() -> [ModelChoice: ModelManager] {
