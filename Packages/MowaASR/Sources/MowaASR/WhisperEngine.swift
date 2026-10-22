@@ -7,7 +7,7 @@
     ///
     /// Whisper detects the language of each utterance. The engine loads the model on the first
     /// call. It never uses the network: the model manager downloads the model before.
-    public actor WhisperEngine: TranscriptionEngine {
+    public actor WhisperEngine: ReleasableEngine {
         private let loader: LoadOnce<WhisperRuntime>
 
         public init(store: WhisperModelStore, log: PhaseLog = .silent) {
@@ -19,6 +19,10 @@
                     }
                 }
             )
+        }
+
+        public func release() async {
+            await loader.reset()
         }
 
         public func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {

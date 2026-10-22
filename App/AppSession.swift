@@ -25,9 +25,9 @@ enum AppSession {
         let relay = DictationRelay(
             engine: SwitchingEngine(
                 choice: { Self.modelChoiceStorage.choice },
-                engines: [
-                    .parakeet: ParakeetEngine(store: ParakeetModelStore(), log: log),
-                    .whisper: WhisperEngine(store: WhisperModelStore(), log: log),
+                makers: [
+                    .parakeet: { ParakeetEngine(store: ParakeetModelStore(), log: log) },
+                    .whisper: { WhisperEngine(store: WhisperModelStore(), log: log) },
                 ],
                 log: log
             ),

@@ -23,4 +23,9 @@ actor LoadOnce<Value: Sendable> {
         value = loaded
         return loaded
     }
+
+    /// Drops the kept value. The next `get` loads it again.
+    func reset() {
+        value = nil
+    }
 }
