@@ -14,7 +14,8 @@ You work on mowa, issue #{{ISSUE}}, branch `{{BRANCH}}`. The checks failed: the 
 - If a function has CRAP 6 or more, make it smaller or add tests.
 - Follow `docs/PRD.md`, `docs/CODING_STANDARDS.md` and `docs/CI_PLAN.md`.
 - If the format check fails, run `swift format format --in-place --recursive .`. Do not format by hand.
-- Run `swift test` for the packages that build on Linux.
+- Read `CLAUDE.md`. Before you commit, run `scripts/precommit.sh --fix`. Fix all failures, and run it again until it passes. Do not commit when it fails.
+- If CI fails on macOS but the local checks pass, look for Apple-only code: an API that is available on iOS but not on macOS, or a test that expects a real device value. See `CLAUDE.md`.
 - Run `scripts/crap-local.sh` before you finish. It runs the tests with coverage for each package under `Packages/` and `Tools/` and fails if a function has CRAP 6 or more. Fix each function that it lists: add tests, or split the function.
 - Put platform-free logic (sample conversion, buffer math, voice activity probability, pipeline state, text rules) in a package under `Packages/` so that the local gate measures it. Code in `App/` and `Keyboard/` that uses AVFoundation, UIKit, SwiftUI or Core ML is measured only in the macOS CI: keep each such function very small (complexity 1 or 2, no loops, no `if`, no `switch`) and call into a package for the logic.
 - lizard counts `if`, `guard`, `for`, `while`, `case`, `&&`, `||`, `??`, `?:`, and also `?` in optional types. Keep these out of large functions.

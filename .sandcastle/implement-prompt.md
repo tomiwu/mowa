@@ -2,7 +2,7 @@
 
 You work on mowa. mowa is an iOS app (Swift, SwiftUI, minimum iOS 26) for on-device dictation in Polish and English. A keyboard extension opens the main app. The main app records and transcribes with Parakeet TDT 0.6B v3 (FluidAudio), with WhisperKit as fallback.
 
-You work in a Linux container. You cannot build or run the iOS app here. You have Swift for Linux (`swift`, `swift format`), `swiftlint` (it does not run in this container; the CI `lint` job runs it) and `lizard`. GitHub Actions on macOS runs the real checks after the host opens the PR: `format`, `lint`, `build`, `test`, `crap`.
+You work in a Linux container. You cannot build or run the iOS app here. You have Swift for Linux (`swift`, `swift format`), `swiftlint-static` (SwiftLint without the SourceKit rules) and `lizard`. GitHub Actions on macOS runs the real checks after the host opens the PR: `format`, `lint`, `build`, `test`, `crap`.
 
 ## Your issue: #{{ISSUE}}
 
@@ -19,7 +19,7 @@ Implement issue #{{ISSUE}} on branch `{{BRANCH}}`. Do only this issue.
 1. Read the issue, `docs/PRD.md`, `docs/CODING_STANDARDS.md` and `docs/CI_PLAN.md`. Follow them.
 2. Read the source files and tests that exist.
 3. Use Red-Green-Refactor with Swift Testing. Write a failing test first. Put platform-free logic in Swift packages under `Packages/` so that `swift test` runs on Linux.
-4. Run `swift format format --in-place --recursive .`, `swift test` for each package that builds on Linux, and `scripts/crap-local.sh`. Fix all failures. Code that imports UIKit, SwiftUI, AVFoundation or Core ML cannot build here: write it with care, and keep it small.
+4. Read `CLAUDE.md`. Before each commit, run `scripts/precommit.sh --fix`. Fix all failures, and run it again until it passes. Do not commit when it fails. Code that imports UIKit, SwiftUI, AVFoundation or Core ML cannot build here: write it with care, and keep it small.
 5. Make one git commit. Start the message with `RALPH: #{{ISSUE}}`. Write the task, the key decisions and the files changed. The host copies the commit messages into the PR description.
 
 # Rules

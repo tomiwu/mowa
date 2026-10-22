@@ -15,7 +15,9 @@ export function classifyRuns(runs: CiRun[], sha: string): { state: CiState; canc
   if (!current.length) return { state: "missing", cancelledIds: [] };
   if (current.some((r) => r.status !== "completed")) return { state: "pending", cancelledIds: [] };
   const cancelledIds = current.filter((r) => r.conclusion === "cancelled").map((r) => r.databaseId);
-  if (current.some((r) => r.conclusion === "failure" || r.conclusion === "timed_out" || r.conclusion === "startup_failure")) {
+  // Only "success" passes. Every other conclusion (failure, timed_out, action_required, neutral,
+  // skipped, stale, startup_failure) blocks the merge. A cancelled run is started again.
+  if (current.some((r) => r.conclusion !== "success" && r.conclusion !== "cancelled")) {
     return { state: "failure", cancelledIds };
   }
   if (cancelledIds.length) return { state: "cancelled", cancelledIds };
