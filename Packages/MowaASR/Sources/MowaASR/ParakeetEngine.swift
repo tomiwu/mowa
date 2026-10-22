@@ -10,14 +10,16 @@
     public actor ParakeetEngine: TranscriptionEngine {
         private let loader: LoadOnce<AsrManager>
 
-        public init(store: ParakeetModelStore) {
+        public init(store: ParakeetModelStore, log: PhaseLog = .silent) {
             loader = LoadOnce(
                 isReady: { store.isInstalled },
                 load: {
-                    let models = try await AsrModels.load(from: store.directory, version: .v3)
-                    let manager = AsrManager()
-                    try await manager.loadModels(models)
-                    return manager
+                    try await log.around(.modelLoadStart, .modelLoadEnd, model: .parakeet) {
+                        let models = try await AsrModels.load(from: store.directory, version: .v3)
+                        let manager = AsrManager()
+                        try await manager.loadModels(models)
+                        return manager
+                    }
                 }
             )
         }

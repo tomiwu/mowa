@@ -21,13 +21,15 @@ enum AppSession {
     static func makeController(history: HistoryModel) -> SessionController {
         let store = makeStore()
         let notifier = DarwinNotifier(transport: SystemNotificationTransport())
+        let log = PhaseLog.system()
         let relay = DictationRelay(
             engine: SwitchingEngine(
                 choice: { Self.modelChoiceStorage.choice },
                 engines: [
-                    .parakeet: ParakeetEngine(store: ParakeetModelStore()),
-                    .whisper: WhisperEngine(store: WhisperModelStore()),
-                ]
+                    .parakeet: ParakeetEngine(store: ParakeetModelStore(), log: log),
+                    .whisper: WhisperEngine(store: WhisperModelStore(), log: log),
+                ],
+                log: log
             ),
             store: store,
             notifier: notifier,
@@ -36,7 +38,10 @@ enum AppSession {
         return SessionController(
             store: store,
             notifier: notifier,
-            recorder: AudioEngineRecorder { stream in
+            recorder: AudioEngineRecorder(
+                log: log,
+                model: { Self.modelChoiceStorage.choice }
+            ) { stream in
                 Task { await SpeechCapture.run(stream, relay: relay) }
             },
             sleep: { try await Task.sleep(for: $0) }

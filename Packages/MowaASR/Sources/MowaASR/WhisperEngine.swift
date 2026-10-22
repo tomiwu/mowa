@@ -10,10 +10,14 @@
     public actor WhisperEngine: TranscriptionEngine {
         private let loader: LoadOnce<WhisperRuntime>
 
-        public init(store: WhisperModelStore) {
+        public init(store: WhisperModelStore, log: PhaseLog = .silent) {
             loader = LoadOnce(
                 isReady: { store.isInstalled },
-                load: { try await WhisperRuntime.open(folder: store.directory.path) }
+                load: {
+                    try await log.around(.modelLoadStart, .modelLoadEnd, model: .whisper) {
+                        try await WhisperRuntime.open(folder: store.directory.path)
+                    }
+                }
             )
         }
 

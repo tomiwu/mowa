@@ -33,3 +33,27 @@ struct SwitchingEngineTests {
         }
     }
 }
+
+@Suite("Switching engine log")
+struct SwitchingEngineLogTests {
+    private final class Lines: @unchecked Sendable {
+        // The test reads it after the engine call ends.
+        var values: [String] = []
+    }
+
+    @Test func logsTranscriptionStartAndEndWithTheModel() async throws {
+        let lines = Lines()
+        let engine = SwitchingEngine(
+            choice: { .whisper },
+            engines: [.whisper: FixedEngine(text: "w")],
+            log: PhaseLog(write: { lines.values.append($0) }, availableBytes: { 9 })
+        )
+        _ = try await engine.transcribe([])
+        #expect(
+            lines.values == [
+                "transcription-start model=whisper available-bytes=9",
+                "transcription-end model=whisper available-bytes=9",
+            ]
+        )
+    }
+}
