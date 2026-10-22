@@ -15,4 +15,17 @@ struct LicenseListTests {
         #expect(entry?.license == "CC-BY-4.0")
         #expect(entry?.id == entry?.name)
     }
+
+    @Test func everyEntryNamesItsAuthor() {
+        #expect(LicenseList.entries.allSatisfy { !$0.author.isEmpty })
+    }
+
+    @Test func requiredLicensesHaveTheRightAuthor() {
+        let authors = Dictionary(
+            uniqueKeysWithValues: LicenseList.entries.map { ($0.name, $0.author) }
+        )
+        #expect(authors["Parakeet TDT 0.6B v3"] == "NVIDIA")
+        #expect(authors["FluidAudio"] == "Fluid Inference")
+        #expect(authors["WhisperKit"] == "Argmax, Inc.")
+    }
 }

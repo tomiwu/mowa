@@ -59,9 +59,9 @@ If a secret is missing, the job stops at the first step. The error names each mi
 ## Licenses
 
 - mowa code: MIT. See [LICENSE](LICENSE).
-- Parakeet TDT 0.6B v3 model: CC-BY-4.0, by NVIDIA.
+- Parakeet TDT 0.6B v3 model: CC-BY-4.0, by NVIDIA. mowa uses the model without changes. Source: [nvidia/parakeet-tdt-0.6b-v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3). License: [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
 - Whisper large-v3 turbo model: MIT, by OpenAI.
-- FluidAudio: Apache-2.0. WhisperKit: MIT.
+- FluidAudio: Apache-2.0, by Fluid Inference. WhisperKit: MIT, by Argmax, Inc.
 
 The app shows the same list in Settings (Licenses).
 

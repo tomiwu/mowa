@@ -2,6 +2,7 @@
 public struct LicenseEntry: Equatable, Identifiable, Sendable {
     public let name: String
     public let license: String
+    public let author: String
     public let note: String
 
     public var id: String { name }
@@ -13,13 +14,25 @@ public enum LicenseList {
         LicenseEntry(
             name: "Parakeet TDT 0.6B v3",
             license: "CC-BY-4.0",
-            note: "Model by NVIDIA."
+            author: "NVIDIA",
+            note: "Model by NVIDIA, licensed under CC-BY-4.0. Not changed by mowa."
         ),
-        LicenseEntry(name: "FluidAudio", license: "Apache-2.0", note: "Runs Parakeet and VAD."),
-        LicenseEntry(name: "WhisperKit", license: "MIT", note: "Runs Whisper on the device."),
+        LicenseEntry(
+            name: "FluidAudio",
+            license: "Apache-2.0",
+            author: "Fluid Inference",
+            note: "Runs Parakeet and VAD."
+        ),
+        LicenseEntry(
+            name: "WhisperKit",
+            license: "MIT",
+            author: "Argmax, Inc.",
+            note: "Runs Whisper on the device."
+        ),
         LicenseEntry(
             name: "Whisper large-v3 turbo",
             license: "MIT",
+            author: "OpenAI",
             note: "Model by OpenAI."
         ),
     ]

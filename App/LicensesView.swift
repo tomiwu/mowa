@@ -7,6 +7,7 @@ struct LicensesView: View {
         List(LicenseList.entries) { entry in
             VStack(alignment: .leading) {
                 Text("\(entry.name): \(entry.license)")
+                Text("Author: \(entry.author)")
                 Text(entry.note).font(.caption)
             }
         }
