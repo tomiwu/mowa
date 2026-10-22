@@ -59,8 +59,19 @@ public struct PhaseLog: Sendable {
             let logger = Logger(subsystem: "com.tomiwu.mowa", category: "dictation")
             return Self(
                 write: { logger.notice("\($0, privacy: .public)") },
-                availableBytes: { UInt64(os_proc_available_memory()) }
+                availableBytes: Self.processAvailableBytes
             )
         }
+
+        #if os(macOS)
+            @Sendable private static func processAvailableBytes() -> UInt64 {
+                // `os_proc_available_memory` does not exist on macOS.
+                0
+            }
+        #else
+            @Sendable private static func processAvailableBytes() -> UInt64 {
+                UInt64(os_proc_available_memory())
+            }
+        #endif
     }
 #endif
