@@ -3,23 +3,23 @@
     import Foundation
     public import MowaCore
 
-    /// Files of the Parakeet TDT 0.6B v3 model (Core ML, int8 encoder) from Hugging Face.
+    /// Files of the Parakeet Redux model (Core ML, 220 MB, same languages as v3) from Hugging Face.
     ///
     /// The download is the only network use of the app.
     public struct ParakeetModelStore: ModelStore {
-        /// About 595 MB for the int8 encoder variant (FluidAudio Models.md).
-        public let sizeInBytes: Int64 = 595_000_000
-        let directory = AsrModels.defaultCacheDirectory(for: .v3)
+        /// The measured size of the Redux files: 220.5 MB.
+        public let sizeInBytes = ParakeetModelChoice.standard.sizeInBytes
+        let directory = AsrModels.defaultCacheDirectory(for: .redux)
 
         public init() {}
 
         public var isInstalled: Bool {
-            AsrModels.modelsExist(at: directory, version: .v3)
+            AsrModels.modelsExist(at: directory, version: .redux)
         }
 
         public func download() -> AsyncThrowingStream<Double, any Error> {
             progressStream { report in
-                _ = try await AsrModels.download(version: .v3) { report($0.fractionCompleted) }
+                _ = try await AsrModels.download(version: .redux) { report($0.fractionCompleted) }
             }
         }
 

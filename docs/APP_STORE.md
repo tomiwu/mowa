@@ -62,7 +62,7 @@ The targets are from `docs/PRD.md`. Fill the last column when a person measures 
 | --- | --- | --- | --- |
 | NFR1 latency | Text shows in less than 1.5 s after the mic release, 10 s of speech, iPhone 15 or newer | Not measured | Procedure and tables: `docs/DEVICE_MEASUREMENTS.md`. Known limit until measured: the first dictation after a model install compiles the Core ML model and is slower. |
 | NFR2 keyboard memory | Less than 30 MB | Not measured | The keyboard has no ML model and no audio. The iOS limit is not published (sources: 48 MB to 70 MB). |
-| NFR3 main app memory | Peak below the background jetsam limit | Not measured | Parakeet v3 is about 595 MB on disk. If the peak is too high, use the Redux model (about 220 MB). See `docs/DEVICE_MEASUREMENTS.md`. |
+| NFR3 main app memory | Peak below the background jetsam limit | Not measured | The default is the Redux model (220.5 MB). Measure the peak on the device (issue #50). See `docs/DEVICE_MEASUREMENTS.md`. |
 | NFR5 Polish WER | 9 % or less on our test set | Not measured on the app | Reference only: Parakeet v3 FLEURS-pl 7.31 %. Test set and script: `docs/WER_TEST_SET.md`. |
 | NFR5 names | 90 % or more correct with the word list | Not measured on a device | Method comparison: `docs/BIASING_METHODS.md`. |
 
