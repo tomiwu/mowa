@@ -1,4 +1,5 @@
 import AVFoundation
+import MowaASR
 import MowaCore
 import MowaShared
 
