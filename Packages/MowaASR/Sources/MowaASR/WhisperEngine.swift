@@ -3,7 +3,7 @@
     public import MowaCore
     import WhisperKit
 
-    /// Transcribes on the device with Whisper large-v3 turbo through WhisperKit.
+    /// Transcribes on the device with Whisper through WhisperKit.
     ///
     /// Whisper detects the language of each utterance. The engine loads the model on the first
     /// call. It never uses the network: the model manager downloads the model before.
