@@ -21,7 +21,7 @@ public enum TranscriptionError: Error, Equatable, Sendable {
 
 /// An engine that turns 16 kHz mono samples into text on the device.
 ///
-/// Parakeet (FluidAudio) implements it. WhisperKit implements it in a later issue.
+/// Parakeet (FluidAudio) and Whisper (WhisperKit) implement it.
 public protocol TranscriptionEngine: Sendable {
     func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript
 }

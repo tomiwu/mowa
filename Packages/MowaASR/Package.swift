@@ -9,6 +9,7 @@ let package = Package(
         .package(path: "../MowaCore"),
         .package(path: "../MowaShared"),
         .package(url: "https://github.com/FluidInference/FluidAudio.git", from: "0.17.7"),
+        .package(url: "https://github.com/argmaxinc/WhisperKit.git", from: "1.1.1"),
     ],
     targets: [
         .target(
@@ -19,6 +20,11 @@ let package = Package(
                 .product(
                     name: "FluidAudio",
                     package: "FluidAudio",
+                    condition: .when(platforms: [.iOS, .macOS])
+                ),
+                .product(
+                    name: "WhisperKit",
+                    package: "WhisperKit",
                     condition: .when(platforms: [.iOS, .macOS])
                 ),
             ],

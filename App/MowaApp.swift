@@ -14,7 +14,8 @@ struct MowaApp: App {
     @State private var words = WordListModel(
         store: try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
     )
-    @State private var models = ModelManager(store: ParakeetModelStore())
+    @State private var selection = ModelSelection(storage: AppSession.modelChoiceStorage)
+    @State private var managers = AppSession.makeManagers()
 
     init() {
         let store = try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
@@ -29,12 +30,15 @@ struct MowaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            VStack(spacing: 24) {
-                OnboardingView(model: onboarding)
-                Text(session.status.label)
-                ModelView(models: models)
-                WordListView(model: words)
-                HistoryView(model: history)
+            NavigationStack {
+                VStack(spacing: 24) {
+                    OnboardingView(model: onboarding)
+                    Text(session.status.label)
+                    ModelView(selection: selection, managers: managers)
+                    NavigationLink("Licenses") { LicensesView() }
+                    WordListView(model: words)
+                    HistoryView(model: history)
+                }
             }
             .onOpenURL { session.handle(url: $0) }
             .onChange(of: scenePhase, initial: true) { onboarding.refresh() }

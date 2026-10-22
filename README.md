@@ -60,6 +60,9 @@ If a secret is missing, the job stops at the first step. The error names each mi
 
 - mowa code: MIT. See [LICENSE](LICENSE).
 - Parakeet TDT 0.6B v3 model: CC-BY-4.0, by NVIDIA.
+- Whisper large-v3 turbo model: MIT, by OpenAI.
 - FluidAudio: Apache-2.0. WhisperKit: MIT.
+
+The app shows the same list in Settings (Licenses).
 
 See [docs/PRD.md](docs/PRD.md) for the full requirements.

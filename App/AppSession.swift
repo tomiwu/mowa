@@ -5,12 +5,28 @@ import MowaShared
 
 /// Builds the session controller with the App Group store and the microphone.
 enum AppSession {
+    static let modelChoiceStorage = ModelChoiceStorage(suiteName: MowaShared.appGroupIdentifier)
+
+    @MainActor
+    static func makeManagers() -> [ModelChoice: ModelManager] {
+        [
+            .parakeet: ModelManager(store: ParakeetModelStore()),
+            .whisper: ModelManager(store: WhisperModelStore()),
+        ]
+    }
+
     @MainActor
     static func makeController(history: HistoryModel) -> SessionController {
         let store = makeStore()
         let notifier = DarwinNotifier(transport: SystemNotificationTransport())
         let relay = DictationRelay(
-            engine: ParakeetEngine(store: ParakeetModelStore()),
+            engine: SwitchingEngine(
+                choice: { modelChoiceStorage.choice },
+                engines: [
+                    .parakeet: ParakeetEngine(store: ParakeetModelStore()),
+                    .whisper: WhisperEngine(store: WhisperModelStore()),
+                ]
+            ),
             store: store,
             notifier: notifier,
             history: { entry in await history.record(entry) }
