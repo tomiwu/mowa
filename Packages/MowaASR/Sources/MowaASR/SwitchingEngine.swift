@@ -35,6 +35,12 @@ public actor SwitchingEngine: TranscriptionEngine {
         }
     }
 
+    /// Frees the model of the current engine, for example after a memory warning.
+    /// The next `transcribe` call loads the model one time.
+    public func releaseModel() async {
+        await current?.engine.release()
+    }
+
     private func engine(for model: ModelChoice) async throws(TranscriptionError)
         -> any ReleasableEngine
     {
