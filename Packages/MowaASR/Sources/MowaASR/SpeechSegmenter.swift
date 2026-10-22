@@ -1,7 +1,8 @@
 /// Cuts a stream of audio chunks into utterances with the speech probability of each chunk.
 ///
 /// An utterance starts when the probability reaches the start threshold. It ends after enough
-/// silent chunks in a row, when it reaches `maxChunks`, or when `finish` is called (the user released the mic).
+/// silent chunks in a row, when it reaches `maxChunks`, or when `finish` is called (the user
+/// released the mic).
 public struct SpeechSegmenter: Sendable {
     private let config: SegmenterConfig
     private var preroll: [[Float]] = []
