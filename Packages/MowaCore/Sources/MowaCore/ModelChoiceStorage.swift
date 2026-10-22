@@ -1,4 +1,4 @@
-public import Foundation
+import Foundation
 
 /// Keeps the selected ASR model in the user defaults of one suite.
 public struct ModelChoiceStorage: Sendable {
