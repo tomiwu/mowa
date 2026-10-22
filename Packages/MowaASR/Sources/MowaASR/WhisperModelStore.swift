@@ -3,18 +3,21 @@
     public import MowaCore
     import WhisperKit
 
-    /// Files of the Whisper large-v3 turbo model (Core ML, 626 MB variant) from Hugging Face.
+    /// Files of the Whisper model (Core ML) from Hugging Face.
+    ///
+    /// The variant depends on the device: a small device gets the base model.
     public struct WhisperModelStore: ModelStore {
-        static let variant = "openai_whisper-large-v3-v20240930_626MB"
-
-        /// About 626 MB, as the name of the variant says.
-        public let sizeInBytes: Int64 = 626_000_000
+        let variant: String
+        public let sizeInBytes: Int64
         private let base = URL.applicationSupportDirectory.appending(path: "whisperkit")
 
-        public init() {}
+        public init(variant: WhisperVariant = .forDevice(identifier: DeviceIdentifier.current)) {
+            self.variant = variant.name
+            sizeInBytes = variant.sizeInBytes
+        }
 
         var directory: URL {
-            base.appending(path: "models/argmaxinc/whisperkit-coreml/\(Self.variant)")
+            base.appending(path: "models/argmaxinc/whisperkit-coreml/\(variant)")
         }
 
         public var isInstalled: Bool {
@@ -25,9 +28,10 @@
 
         public func download() -> AsyncThrowingStream<Double, any Error> {
             let base = base
+            let variant = variant
             return progressStream { report in
                 _ = try await WhisperKit.download(
-                    variant: Self.variant,
+                    variant: variant,
                     downloadBase: base,
                     progressCallback: { report($0.fractionCompleted) }
                 )
