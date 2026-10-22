@@ -39,3 +39,8 @@ test("a queued run is never no-run", () => {
 test("a cancelled run is started again", () => {
   assert.equal(ciDecision("cancelled", 0), "rerun");
 });
+test("only success passes: other conclusions block the merge", () => {
+  for (const c of ["neutral", "skipped", "action_required", "stale", "timed_out", "startup_failure", ""]) {
+    assert.equal(classifyRuns([run(5, "new", "completed", c)], "new").state, "failure", c);
+  }
+});

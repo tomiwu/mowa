@@ -60,7 +60,7 @@ Review the code changes on branch `{{BRANCH}}` and improve code clarity, consist
 If you find improvements to make:
 
 1. Make the changes directly on this branch
-2. Run `swift format lint --strict --recursive .`, `swift test` for Linux packages and `scripts/crap-local.sh` to ensure nothing is broken
+2. Read `CLAUDE.md`. Run `scripts/precommit.sh --fix` and fix all failures until it passes. Do not commit when it fails
 3. Commit describing the refinements. Write the commit message in English, in ASD-STE100 Simplified Technical English.
 
 If the code is already clean and well-structured, do nothing.
