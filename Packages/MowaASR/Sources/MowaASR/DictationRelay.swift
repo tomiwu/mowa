@@ -32,8 +32,30 @@ public struct DictationRelay: Sendable {
     /// Transcribes the utterance. The audio stays on the device. A failed or empty
     /// transcription sends nothing.
     public func handle(_ segment: SpeechSegment) async {
-        guard let transcript = try? await engine.transcribe(segment.samples) else { return }
-        await publish(transcript, duration: segment.duration)
+        do {
+            let transcript = try await engine.transcribe(segment.samples)
+            clearLowMemory()
+            await publish(transcript, duration: segment.duration)
+        } catch {
+            reportLowMemory(error)
+        }
+    }
+
+    /// Shows "not enough memory" in the session status when the model load is refused.
+    private func reportLowMemory(_ error: TranscriptionError) {
+        guard error == .notEnoughMemory else { return }
+        setStatus(.lowMemory)
+    }
+
+    /// Shows the recording status again after a transcription works.
+    private func clearLowMemory() {
+        guard (try? store.readSessionStatus()) == .lowMemory else { return }
+        setStatus(.recording)
+    }
+
+    private func setStatus(_ status: SessionStatus) {
+        try? store.writeSessionStatus(status)
+        notifier.postSessionChanged()
     }
 
     /// Corrects the names. Runs the clean-up on the device only when the setting is ON.

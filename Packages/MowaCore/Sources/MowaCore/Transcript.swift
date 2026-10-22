@@ -16,6 +16,7 @@ public struct Transcript: Sendable, Equatable {
 public enum TranscriptionError: Error, Equatable, Sendable {
     case modelNotInstalled
     case modelLoadFailed
+    case notEnoughMemory
     case transcriptionFailed
 }
 
