@@ -2,7 +2,7 @@
     import FluidAudio
     public import MowaCore
 
-    /// Transcribes on the device with Parakeet TDT 0.6B v3 through FluidAudio.
+    /// Transcribes on the device with the Parakeet Redux model (a v3 derivative) through FluidAudio.
     ///
     /// The model has automatic language ID, so one engine serves Polish and English. The engine
     /// loads the model on the first call. It never uses the network: the model manager
@@ -16,7 +16,10 @@
                 availableBytes: MemoryBudget.systemAvailableBytes,
                 load: {
                     try await log.around(.modelLoadStart, .modelLoadEnd, model: .parakeet) {
-                        let models = try await AsrModels.load(from: store.directory, version: .v3)
+                        let models = try await AsrModels.load(
+                            from: store.directory,
+                            version: .redux
+                        )
                         let manager = AsrManager()
                         try await manager.loadModels(models)
                         return manager
