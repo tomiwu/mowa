@@ -79,6 +79,17 @@ public struct SharedStore: Sendable {
         try read(SharedSettings.self, from: "settings.json") ?? .standard
     }
 
+    /// Whether the text clean-up is ON. It is OFF when the settings cannot be read.
+    public var isCleanUpEnabled: Bool {
+        (try? readSettings())?.cleanUpEnabled ?? false
+    }
+
+    public func setCleanUp(enabled: Bool) throws(SharedStoreError) {
+        var settings = try readSettings()
+        settings.cleanUpEnabled = enabled
+        try writeSettings(settings)
+    }
+
     public func writeKeyboardReport(_ report: KeyboardReport) throws(SharedStoreError) {
         try write(report, to: "keyboard.json")
     }

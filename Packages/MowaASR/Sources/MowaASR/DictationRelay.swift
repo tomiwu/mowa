@@ -2,7 +2,8 @@ public import Foundation
 public import MowaCore
 public import MowaShared
 
-/// Transcribes each utterance, corrects the names with the word list
+/// Transcribes each utterance, corrects the names with the word list,
+/// cleans up the text when the user turns it on
 /// and sends the text to the keyboard through the App Group.
 public struct DictationRelay: Sendable {
     private let engine: any TranscriptionEngine
@@ -35,10 +36,16 @@ public struct DictationRelay: Sendable {
         await publish(transcript, duration: segment.duration)
     }
 
-    private func publish(_ transcript: Transcript, duration: Double) async {
-        guard !transcript.text.isEmpty else { return }
+    /// Corrects the names. Runs the clean-up on the device only when the setting is ON.
+    private func processed(_ text: String) -> String {
         let words = (try? store.readWordList()) ?? []
-        let text = WordCorrector(words: words).correct(transcript.text)
+        let corrected = WordCorrector(words: words).correct(text)
+        return store.isCleanUpEnabled ? TextCleaner().clean(corrected) : corrected
+    }
+
+    private func publish(_ transcript: Transcript, duration: Double) async {
+        let text = processed(transcript.text)
+        guard !text.isEmpty else { return }
         let result = DictationResult(
             id: makeID(),
             text: text,

@@ -14,6 +14,9 @@ struct MowaApp: App {
     @State private var words = WordListModel(
         store: try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
     )
+    @State private var cleanUp = CleanUpModel(
+        store: try? SharedStore(appGroupIdentifier: MowaShared.appGroupIdentifier)
+    )
     @State private var selection = ModelSelection(storage: AppSession.modelChoiceStorage)
     @State private var managers = AppSession.makeManagers()
 
@@ -35,6 +38,7 @@ struct MowaApp: App {
                     OnboardingView(model: onboarding)
                     Text(session.status.label)
                     ModelView(selection: selection, managers: managers)
+                    CleanUpView(model: cleanUp)
                     NavigationLink("Licenses") { LicensesView() }
                     WordListView(model: words)
                     HistoryView(model: history)
