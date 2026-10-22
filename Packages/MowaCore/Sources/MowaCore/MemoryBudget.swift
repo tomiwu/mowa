@@ -23,7 +23,7 @@ extension MemoryBudget {
     #if canImport(os) && !os(macOS)
         /// The free memory of the process from `os_proc_available_memory`.
         @Sendable public static func systemAvailableBytes() -> UInt64 {
-            UInt64(os_proc_available_memory())
+            availableBytes(fromProcessReading: os_proc_available_memory())
         }
     #else
         /// The platform has no per-process limit, so all memory is free.
@@ -31,4 +31,12 @@ extension MemoryBudget {
             .max
         }
     #endif
+}
+
+extension MemoryBudget {
+    /// Turns a raw process reading into free bytes. The simulator reports 0
+    /// because it has no per-process limit, so 0 means all memory is free.
+    public static func availableBytes(fromProcessReading raw: Int) -> UInt64 {
+        raw > 0 ? UInt64(raw) : .max
+    }
 }

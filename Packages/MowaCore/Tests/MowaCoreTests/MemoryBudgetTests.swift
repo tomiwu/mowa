@@ -21,4 +21,12 @@ struct MemoryBudgetTests {
     @Test func systemReadingHasNoLimitOffDevice() {
         #expect(MemoryBudget.systemAvailableBytes() > 0)
     }
+
+    @Test func zeroReadingMeansNoLimit() {
+        #expect(MemoryBudget.availableBytes(fromProcessReading: 0) == .max)
+    }
+
+    @Test func positiveReadingIsKept() {
+        #expect(MemoryBudget.availableBytes(fromProcessReading: 5) == 5)
+    }
 }
