@@ -6,7 +6,7 @@ import Testing
 private struct FixedEngine: TranscriptionEngine {
     let text: String
 
-    func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {
+    func transcribe(_: [Float]) async throws(TranscriptionError) -> Transcript {
         Transcript(text: text)
     }
 }

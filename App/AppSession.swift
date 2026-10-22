@@ -23,7 +23,7 @@ enum AppSession {
         let notifier = DarwinNotifier(transport: SystemNotificationTransport())
         let relay = DictationRelay(
             engine: SwitchingEngine(
-                choice: { AppSession.modelChoiceStorage.choice },
+                choice: { Self.modelChoiceStorage.choice },
                 engines: [
                     .parakeet: ParakeetEngine(store: ParakeetModelStore()),
                     .whisper: WhisperEngine(store: WhisperModelStore()),
