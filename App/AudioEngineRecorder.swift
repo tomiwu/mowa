@@ -1,4 +1,5 @@
 import AVFoundation
+import MowaCore
 import MowaShared
 
 /// Records from the microphone with the audio engine. The audio background mode keeps it running.
@@ -9,19 +10,29 @@ nonisolated final class AudioEngineRecorder: AudioRecorder, @unchecked Sendable 
     // The engine is not Sendable. Only the session controller on the main actor calls this type.
     private let engine = AVAudioEngine()
     private let onStream: @Sendable (AsyncStream<[Float]>) -> Void
+    private let log: PhaseLog
+    private let model: @Sendable () -> ModelChoice
     private var samples: AsyncStream<[Float]>.Continuation?
 
-    init(onStream: @escaping @Sendable (AsyncStream<[Float]>) -> Void) {
+    init(
+        log: PhaseLog,
+        model: @escaping @Sendable () -> ModelChoice,
+        onStream: @escaping @Sendable (AsyncStream<[Float]>) -> Void
+    ) {
+        self.log = log
+        self.model = model
         self.onStream = onStream
     }
 
     func start() throws(AudioRecorderError) {
+        log.record(.recordStart, model: model())
         try Result { try run() }
             .mapError { _ in AudioRecorderError.audioSessionFailed }
             .get()
     }
 
     func stop() {
+        log.record(.recordStop, model: model())
         engine.inputNode.removeTap(onBus: 0)
         engine.stop()
         samples?.finish()

@@ -4,17 +4,24 @@ public import MowaCore
 public struct SwitchingEngine: TranscriptionEngine {
     private let choice: @Sendable () -> ModelChoice
     private let engines: [ModelChoice: any TranscriptionEngine]
+    private let log: PhaseLog
 
     public init(
         choice: @escaping @Sendable () -> ModelChoice,
-        engines: [ModelChoice: any TranscriptionEngine]
+        engines: [ModelChoice: any TranscriptionEngine],
+        log: PhaseLog = .silent
     ) {
         self.choice = choice
         self.engines = engines
+        self.log = log
     }
 
     public func transcribe(_ samples: [Float]) async throws(TranscriptionError) -> Transcript {
-        guard let engine = engines[choice()] else { throw .modelNotInstalled }
-        return try await engine.transcribe(samples)
+        let model = choice()
+        guard let engine = engines[model] else { throw .modelNotInstalled }
+        return try await log.around(.transcriptionStart, .transcriptionEnd, model: model) {
+            () async throws(TranscriptionError) -> Transcript in
+            try await engine.transcribe(samples)
+        }
     }
 }
