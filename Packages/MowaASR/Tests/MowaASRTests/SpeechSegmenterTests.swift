@@ -58,4 +58,55 @@ struct SpeechSegmenterTests {
         _ = segmenter.push(chunk(5), probability: 0.9)
         #expect(segmenter.finish() == SpeechSegment(samples: [5, 5]))
     }
+
+    @Test func longSpeechIsCutAtTheLimit() {
+        let limited = SegmenterConfig(
+            startThreshold: 0.8,
+            endThreshold: 0.5,
+            minSilenceChunks: 2,
+            prerollChunks: 1,
+            maxChunks: 3
+        )
+        var segmenter = SpeechSegmenter(config: limited)
+        #expect(segmenter.push(chunk(1), probability: 0.9) == nil)
+        #expect(segmenter.push(chunk(2), probability: 0.9) == nil)
+        #expect(
+            segmenter.push(chunk(3), probability: 0.9)
+                == SpeechSegment(samples: [1, 1, 2, 2, 3, 3])
+        )
+        #expect(segmenter.finish() == nil)
+    }
+
+    @Test func prerollCountsForTheLimit() {
+        let limited = SegmenterConfig(
+            startThreshold: 0.8,
+            endThreshold: 0.5,
+            minSilenceChunks: 2,
+            prerollChunks: 1,
+            maxChunks: 2
+        )
+        var segmenter = SpeechSegmenter(config: limited)
+        _ = segmenter.push(chunk(7), probability: 0.1)
+        _ = segmenter.push(chunk(1), probability: 0.9)
+        #expect(
+            segmenter.push(chunk(2), probability: 0.9)
+                == SpeechSegment(samples: [7, 7, 1, 1, 2, 2])
+        )
+    }
+
+    @Test func thirtySecondsOfSpeechGiveSegmentsOfFifteenSecondsOrLess() {
+        var segmenter = SpeechSegmenter()
+        let size = SegmenterConfig.chunkSize
+        let total = 30 * SegmenterConfig.sampleRate / size
+        var segments: [SpeechSegment] = []
+        for _ in 0..<total {
+            segments += [segmenter.push([Float](repeating: 1, count: size), probability: 1)]
+                .compactMap { $0 }
+        }
+        segments += [segmenter.finish()].compactMap { $0 }
+        #expect(segments.count >= 2)
+        let limit = SegmenterConfig.maxUtteranceSeconds * SegmenterConfig.sampleRate
+        #expect(segments.allSatisfy { $0.samples.count <= limit })
+        #expect(segments.reduce(0) { $0 + $1.samples.count } == total * size)
+    }
 }

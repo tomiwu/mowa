@@ -43,7 +43,10 @@ nonisolated final class AudioEngineRecorder: AudioRecorder, @unchecked Sendable 
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.playAndRecord, mode: .default, options: [.mixWithOthers])
         try session.setActive(true)
-        let (stream, continuation) = AsyncStream.makeStream(of: [Float].self)
+        let (stream, continuation) = AsyncStream.makeStream(
+            of: [Float].self,
+            bufferingPolicy: .bufferingNewest(SegmenterConfig.streamBufferLimit)
+        )
         samples = continuation
         onStream(stream)
         let input = engine.inputNode
